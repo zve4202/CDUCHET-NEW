@@ -4,12 +4,15 @@ using GH.Windows;
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using static GH.Windows.WindowHelper;
 using static GH.XlShablon.FieldParam;
+
 
 namespace GH.XlShablon
 {
@@ -159,9 +162,13 @@ namespace GH.XlShablon
             //view.OptionsPrint.PrintHorzLines = true;
             //view.OptionsPrint.PrintVertLines = true;
 
-            view.ExportToXlsx(file);
+            ControlExecute(() =>
+            {
+                view.ExportToXlsx(file);
+            }, "EXCEL");
+
             //view.ExportToXlsx(file, new XlsxExportOptions(TextExportMode.Value, false));
-            System.Diagnostics.Process.Start(file);
+            Process.Start(file);
             Application.Exit();
         }
 

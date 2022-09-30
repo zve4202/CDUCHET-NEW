@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -52,6 +53,26 @@ namespace GH.Windows
             else
             {
                 action();
+            }
+        }
+
+        public static void ControlExecute(MethodInvoker action, string processName)
+        {
+            while (true)
+            {
+                try
+                {
+                    action();
+                    break;
+                }
+                catch
+                {
+                    Process[] processes = Process.GetProcessesByName(processName);
+                    foreach (Process proc in processes)
+                    {
+                        proc.Kill();
+                    }
+                }
             }
         }
     }

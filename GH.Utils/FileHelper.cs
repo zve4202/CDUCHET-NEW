@@ -49,6 +49,7 @@ namespace GH.Utils
                 Directory.CreateDirectory(dir);
 
         }
+
         public static void MoveFile(string dirName, string fileName)
         {
             FileInfo file = new FileInfo(fileName);
@@ -58,7 +59,6 @@ namespace GH.Utils
                 File.Delete(fileName);
             file.MoveTo(fileName);
         }
-
 
         private static string pass = "AbCdEfGh";
 

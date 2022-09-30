@@ -12,6 +12,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using static GH.Utils.AppHelper;
 using static GH.Utils.FileHelper;
+using static GH.Windows.WindowHelper;
 
 namespace GH.XlShablon
 {
@@ -684,7 +685,12 @@ namespace GH.XlShablon
         internal void ClearExcelData()
         {
             if (!CancellationToken.IsCancellationRequested)
-                MoveFile(ProcessedFolder, FileName);
+            {
+                ControlExecute(() =>
+                {
+                    MoveFile(ProcessedFolder, FileName);
+                }, "EXCEL");
+            }
             isProcessing = false;
             progressBar.Visible = false;
             Clear();
