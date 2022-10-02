@@ -1,222 +1,226 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
-    <ProductVersion>8.0.30703</ProductVersion>
-    <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{39F7E28F-8777-4C59-9C2D-EDCEAAC3E3E2}</ProjectGuid>
-    <OutputType>WinExe</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Tester</RootNamespace>
-    <AssemblyName>Tester</AssemblyName>
-    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
-    <FileAlignment>512</FileAlignment>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
-    <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
-    <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-  </PropertyGroup>
-  <PropertyGroup>
-    <ApplicationIcon>EXCEL_257.ico</ApplicationIcon>
-  </PropertyGroup>
-  <ItemGroup>
-    <Reference Include="Antlr3.Runtime, Version=3.5.0.2, Culture=neutral, PublicKeyToken=eb42632606e9261f, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Antlr3.Runtime.3.5.1\lib\net40-client\Antlr3.Runtime.dll</HintPath>
-    </Reference>
-    <Reference Include="DevExpress.BonusSkins.v17.2" />
-    <Reference Include="DevExpress.Data.v17.2" />
-    <Reference Include="DevExpress.Utils.v17.2" />
-    <Reference Include="DevExpress.Sparkline.v17.2.Core" />
-    <Reference Include="DevExpress.XtraBars.v17.2, Version=17.2.7.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL" />
-    <Reference Include="DevExpress.XtraEditors.v17.2" />
-    <Reference Include="DevExpress.Printing.v17.2.Core" />
-    <Reference Include="DevExpress.XtraGrid.v17.2, Version=17.2.7.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL" />
-    <Reference Include="DevExpress.XtraLayout.v17.2, Version=17.2.7.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" />
-    <Reference Include="DevExpress.XtraPrinting.v17.2, Version=17.2.7.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" />
-    <Reference Include="FirebirdSql.Data.FirebirdClient, Version=9.0.2.0, Culture=neutral, PublicKeyToken=3750abcc3150b00c, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\FirebirdSql.Data.FirebirdClient.9.0.2\lib\net48\FirebirdSql.Data.FirebirdClient.dll</HintPath>
-    </Reference>
-    <Reference Include="FluentNHibernate, Version=3.1.0.0, Culture=neutral, PublicKeyToken=8aa435e3cb308880, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\FluentNHibernate.3.1.0\lib\net461\FluentNHibernate.dll</HintPath>
-    </Reference>
-    <Reference Include="Iesi.Collections, Version=4.0.0.4000, Culture=neutral, PublicKeyToken=aa95f207798dfdb4, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Iesi.Collections.4.0.4\lib\net461\Iesi.Collections.dll</HintPath>
-    </Reference>
-    <Reference Include="NHibernate, Version=5.3.0.0, Culture=neutral, PublicKeyToken=aa95f207798dfdb4, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\NHibernate.5.3.13\lib\net461\NHibernate.dll</HintPath>
-    </Reference>
-    <Reference Include="Remotion.Linq, Version=2.2.0.0, Culture=neutral, PublicKeyToken=fee00910d6e5f53b, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Remotion.Linq.2.2.0\lib\net45\Remotion.Linq.dll</HintPath>
-    </Reference>
-    <Reference Include="Remotion.Linq.EagerFetching, Version=2.2.0.0, Culture=neutral, PublicKeyToken=fee00910d6e5f53b, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Remotion.Linq.EagerFetching.2.2.0\lib\net45\Remotion.Linq.EagerFetching.dll</HintPath>
-    </Reference>
-    <Reference Include="System" />
-    <Reference Include="System.Configuration" />
-    <Reference Include="System.Core" />
-    <Reference Include="System.Runtime.CompilerServices.Unsafe, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\System.Runtime.CompilerServices.Unsafe.6.0.0\lib\net461\System.Runtime.CompilerServices.Unsafe.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Runtime.Serialization" />
-    <Reference Include="System.ServiceModel" />
-    <Reference Include="System.Threading.Tasks.Extensions, Version=4.2.0.1, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\System.Threading.Tasks.Extensions.4.5.4\lib\net461\System.Threading.Tasks.Extensions.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Transactions" />
-    <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Data.DataSetExtensions" />
-    <Reference Include="Microsoft.CSharp" />
-    <Reference Include="System.Data" />
-    <Reference Include="System.Deployment" />
-    <Reference Include="System.Drawing" />
-    <Reference Include="System.Windows.Forms" />
-    <Reference Include="System.Xml" />
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Include="Common\ExcelVsDb\ExcelVsDbDataMap.cs" />
-    <Compile Include="Common\ExcelVsDb\ExcelVsDbProcessor.cs" />
-    <Compile Include="Common\ExcelVsDb\ExcelVsDbShablon.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="Common\ExcelVsDb\ExcelVsDbWorker.cs" />
-    <Compile Include="Database\Models\TestResult.cs" />
-    <Compile Include="Common\ExcelVsExcel\ExcelVsExcelProcessor.cs" />
-    <Compile Include="Common\QtyParam.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="Configs\CfgCdStore.cs" />
-    <Compile Include="Database\Models\ResultOrea.cs" />
-    <Compile Include="Database\Models\ResultSklad.cs" />
-    <Compile Include="Database\Models\TestParams.cs" />
-    <Compile Include="Database\NHibernate\FactoryCriatorTester.cs" />
-    <Compile Include="Database\Scheme\SchemeUpdater.cs" />
-    <Compile Include="Forms\ExcelVsDb\ExcelDbProcSetting.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="Forms\ExcelVsDb\ExcelDbProcSetting.Designer.cs">
-      <DependentUpon>ExcelDbProcSetting.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Forms\ExcelVsDb\ExcelVsDbControl.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="Forms\ExcelVsDb\ExcelVsDbControl.Designer.cs">
-      <DependentUpon>ExcelVsDbControl.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Forms\ExcelVsExcel\ExcelVsExcelControl.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="Forms\ExcelVsExcel\ExcelVsExcelControl.Designer.cs">
-      <DependentUpon>ExcelVsExcelControl.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Common\ExcelVsExcel\ExcelVsExcelShablon.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="Forms\TestResultControl.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="Forms\TestResultControl.Designer.cs">
-      <DependentUpon>TestResultControl.cs</DependentUpon>
-    </Compile>
-    <Compile Include="mainForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="mainForm.Designer.cs">
-      <DependentUpon>mainForm.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Common\ExcelVsExcel\ExcelVsExcelDataMap.cs" />
-    <Compile Include="Database\Models\Client.cs" />
-    <Compile Include="Program.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-    <EmbeddedResource Include="Forms\ExcelVsDb\ExcelDbProcSetting.resx">
-      <DependentUpon>ExcelDbProcSetting.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\ExcelVsDb\ExcelVsDbControl.resx">
-      <DependentUpon>ExcelVsDbControl.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\ExcelVsExcel\ExcelVsExcelControl.resx">
-      <DependentUpon>ExcelVsExcelControl.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\TestResultControl.resx">
-      <DependentUpon>TestResultControl.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="mainForm.resx">
-      <DependentUpon>mainForm.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Properties\licenses.licx" />
-    <EmbeddedResource Include="Properties\Resources.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
-    <Compile Include="Properties\Resources.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DependentUpon>Resources.resx</DependentUpon>
-      <DesignTime>True</DesignTime>
-    </Compile>
-    <None Include="App.config" />
-    <None Include="packages.config" />
-    <None Include="Properties\Settings.settings">
-      <Generator>SettingsSingleFileGenerator</Generator>
-      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
-    </None>
-    <Compile Include="Properties\Settings.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DependentUpon>Settings.settings</DependentUpon>
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
-    </Compile>
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include=".gitignore" />
-    <Content Include="EXCEL_257.ico" />
-    <Content Include="TestStock.sql" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\..\GH.Configs\GH.Configs.csproj">
-      <Project>{25671fd6-33a6-4a2e-a263-7d3f8568835c}</Project>
-      <Name>GH.Configs</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\GH.Databse\GH.Database.csproj">
-      <Project>{7cbcd79a-e637-478d-8769-eee828383137}</Project>
-      <Name>GH.Database</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\GH.Utils\GH.Utils.csproj">
-      <Project>{4c7bc602-1727-4fc4-aabd-de5d0c2c3f82}</Project>
-      <Name>GH.Utils</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\GH.Windows\GH.Windows.csproj">
-      <Project>{ca2c0085-69b8-4d33-bd43-ec40763511b6}</Project>
-      <Name>GH.Windows</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\XlShablon\GH.XlShablon.csproj">
-      <Project>{c66ec511-1f32-4cb1-8b0c-3e115e762ca8}</Project>
-      <Name>GH.XlShablon</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup />
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <Target Name="AfterBuild">
-    <ItemGroup>
-      <MoveToLibFolder Include="$(OutputPath)*.dll ; $(OutputPath)*.xml" />
-    </ItemGroup>
-    <Move SourceFiles="@(MoveToLibFolder)" DestinationFolder="$(OutputPath)libs" OverwriteReadOnlyFiles="true" />
-  </Target>
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it.
+	<PropertyGroup>
+		<Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+		<Platform Condition=" '$(Platform)' == '' ">x86</Platform>
+		<ProductVersion>8.0.30703</ProductVersion>
+		<SchemaVersion>2.0</SchemaVersion>
+		<ProjectGuid>{39F7E28F-8777-4C59-9C2D-EDCEAAC3E3E2}</ProjectGuid>
+		<OutputType>WinExe</OutputType>
+		<AppDesignerFolder>Properties</AppDesignerFolder>
+		<RootNamespace>Tester</RootNamespace>
+		<AssemblyName>Tester</AssemblyName>
+		<TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
+		<FileAlignment>512</FileAlignment>
+	</PropertyGroup>
+	<PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+		<PlatformTarget>AnyCPU</PlatformTarget>
+		<DebugSymbols>true</DebugSymbols>
+		<DebugType>full</DebugType>
+		<Optimize>false</Optimize>
+		<OutputPath>bin\Debug\</OutputPath>
+		<DefineConstants>DEBUG;TRACE</DefineConstants>
+		<ErrorReport>prompt</ErrorReport>
+		<WarningLevel>4</WarningLevel>
+		<Prefer32Bit>false</Prefer32Bit>
+	</PropertyGroup>
+	<PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+		<PlatformTarget>AnyCPU</PlatformTarget>
+		<DebugType>pdbonly</DebugType>
+		<Optimize>true</Optimize>
+		<OutputPath>bin\Release\</OutputPath>
+		<DefineConstants>TRACE</DefineConstants>
+		<ErrorReport>prompt</ErrorReport>
+		<WarningLevel>4</WarningLevel>
+	</PropertyGroup>
+	<PropertyGroup>
+		<ApplicationIcon>EXCEL_257.ico</ApplicationIcon>
+	</PropertyGroup>
+	<ItemGroup>
+		<Reference Include="Antlr3.Runtime, Version=3.5.0.2, Culture=neutral, PublicKeyToken=eb42632606e9261f, processorArchitecture=MSIL">
+			<HintPath>..\..\packages\Antlr3.Runtime.3.5.1\lib\net40-client\Antlr3.Runtime.dll</HintPath>
+		</Reference>
+		<Reference Include="DevExpress.BonusSkins.v17.2" />
+		<Reference Include="DevExpress.Data.v17.2" />
+		<Reference Include="DevExpress.Utils.v17.2" />
+		<Reference Include="DevExpress.Sparkline.v17.2.Core" />
+		<Reference Include="DevExpress.XtraBars.v17.2, Version=17.2.7.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL" />
+		<Reference Include="DevExpress.XtraEditors.v17.2" />
+		<Reference Include="DevExpress.Printing.v17.2.Core" />
+		<Reference Include="DevExpress.XtraGrid.v17.2, Version=17.2.7.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL" />
+		<Reference Include="DevExpress.XtraLayout.v17.2, Version=17.2.7.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" />
+		<Reference Include="DevExpress.XtraPrinting.v17.2, Version=17.2.7.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" />
+		<Reference Include="FirebirdSql.Data.FirebirdClient, Version=9.0.2.0, Culture=neutral, PublicKeyToken=3750abcc3150b00c, processorArchitecture=MSIL">
+			<HintPath>..\..\packages\FirebirdSql.Data.FirebirdClient.9.0.2\lib\net48\FirebirdSql.Data.FirebirdClient.dll</HintPath>
+		</Reference>
+		<Reference Include="FluentNHibernate, Version=3.1.0.0, Culture=neutral, PublicKeyToken=8aa435e3cb308880, processorArchitecture=MSIL">
+			<HintPath>..\..\packages\FluentNHibernate.3.1.0\lib\net461\FluentNHibernate.dll</HintPath>
+		</Reference>
+		<Reference Include="Iesi.Collections, Version=4.0.0.4000, Culture=neutral, PublicKeyToken=aa95f207798dfdb4, processorArchitecture=MSIL">
+			<HintPath>..\..\packages\Iesi.Collections.4.0.4\lib\net461\Iesi.Collections.dll</HintPath>
+		</Reference>
+		<Reference Include="NHibernate, Version=5.3.0.0, Culture=neutral, PublicKeyToken=aa95f207798dfdb4, processorArchitecture=MSIL">
+			<HintPath>..\..\packages\NHibernate.5.3.13\lib\net461\NHibernate.dll</HintPath>
+		</Reference>
+		<Reference Include="Remotion.Linq, Version=2.2.0.0, Culture=neutral, PublicKeyToken=fee00910d6e5f53b, processorArchitecture=MSIL">
+			<HintPath>..\..\packages\Remotion.Linq.2.2.0\lib\net45\Remotion.Linq.dll</HintPath>
+		</Reference>
+		<Reference Include="Remotion.Linq.EagerFetching, Version=2.2.0.0, Culture=neutral, PublicKeyToken=fee00910d6e5f53b, processorArchitecture=MSIL">
+			<HintPath>..\..\packages\Remotion.Linq.EagerFetching.2.2.0\lib\net45\Remotion.Linq.EagerFetching.dll</HintPath>
+		</Reference>
+		<Reference Include="System" />
+		<Reference Include="System.Configuration" />
+		<Reference Include="System.Core" />
+		<Reference Include="System.Runtime.CompilerServices.Unsafe, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+			<HintPath>..\..\packages\System.Runtime.CompilerServices.Unsafe.6.0.0\lib\net461\System.Runtime.CompilerServices.Unsafe.dll</HintPath>
+		</Reference>
+		<Reference Include="System.Runtime.Serialization" />
+		<Reference Include="System.ServiceModel" />
+		<Reference Include="System.Threading.Tasks.Extensions, Version=4.2.0.1, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+			<HintPath>..\..\packages\System.Threading.Tasks.Extensions.4.5.4\lib\net461\System.Threading.Tasks.Extensions.dll</HintPath>
+		</Reference>
+		<Reference Include="System.Transactions" />
+		<Reference Include="System.Xml.Linq" />
+		<Reference Include="System.Data.DataSetExtensions" />
+		<Reference Include="Microsoft.CSharp" />
+		<Reference Include="System.Data" />
+		<Reference Include="System.Deployment" />
+		<Reference Include="System.Drawing" />
+		<Reference Include="System.Windows.Forms" />
+		<Reference Include="System.Xml" />
+	</ItemGroup>
+	<ItemGroup>
+		<Compile Include="Common\ExcelVsDb\ExcelVsDbDataMap.cs" />
+		<Compile Include="Common\ExcelVsDb\ExcelVsDbProcessor.cs" />
+		<Compile Include="Common\ExcelVsDb\ExcelVsDbShablon.cs">
+			<SubType>UserControl</SubType>
+		</Compile>
+		<Compile Include="Common\ExcelVsDb\ExcelVsDbWorker.cs" />
+		<Compile Include="Database\Models\TestResult.cs" />
+		<Compile Include="Common\ExcelVsExcel\ExcelVsExcelProcessor.cs" />
+		<Compile Include="Common\QtyParam.cs">
+			<SubType>Component</SubType>
+		</Compile>
+		<Compile Include="Configs\CfgCdStore.cs" />
+		<Compile Include="Database\Models\ResultOrea.cs" />
+		<Compile Include="Database\Models\ResultSklad.cs" />
+		<Compile Include="Database\Models\TestParams.cs" />
+		<Compile Include="Database\NHibernate\FactoryCriatorTester.cs" />
+		<Compile Include="Database\Scheme\SchemeUpdater.cs" />
+		<Compile Include="Forms\ExcelVsDb\ExcelDbProcSetting.cs">
+			<SubType>UserControl</SubType>
+		</Compile>
+		<Compile Include="Forms\ExcelVsDb\ExcelDbProcSetting.Designer.cs">
+			<DependentUpon>ExcelDbProcSetting.cs</DependentUpon>
+		</Compile>
+		<Compile Include="Forms\ExcelVsDb\ExcelVsDbControl.cs">
+			<SubType>UserControl</SubType>
+		</Compile>
+		<Compile Include="Forms\ExcelVsDb\ExcelVsDbControl.Designer.cs">
+			<DependentUpon>ExcelVsDbControl.cs</DependentUpon>
+		</Compile>
+		<Compile Include="Forms\ExcelVsExcel\ExcelVsExcelControl.cs">
+			<SubType>UserControl</SubType>
+		</Compile>
+		<Compile Include="Forms\ExcelVsExcel\ExcelVsExcelControl.Designer.cs">
+			<DependentUpon>ExcelVsExcelControl.cs</DependentUpon>
+		</Compile>
+		<Compile Include="Common\ExcelVsExcel\ExcelVsExcelShablon.cs">
+			<SubType>UserControl</SubType>
+		</Compile>
+		<Compile Include="Forms\TestResultControl.cs">
+			<SubType>UserControl</SubType>
+		</Compile>
+		<Compile Include="Forms\TestResultControl.Designer.cs">
+			<DependentUpon>TestResultControl.cs</DependentUpon>
+		</Compile>
+		<Compile Include="mainForm.cs">
+			<SubType>Form</SubType>
+		</Compile>
+		<Compile Include="mainForm.Designer.cs">
+			<DependentUpon>mainForm.cs</DependentUpon>
+		</Compile>
+		<Compile Include="Common\ExcelVsExcel\ExcelVsExcelDataMap.cs" />
+		<Compile Include="Database\Models\Client.cs" />
+		<Compile Include="Program.cs" />
+		<Compile Include="Properties\AssemblyInfo.cs" />
+		<EmbeddedResource Include="Forms\ExcelVsDb\ExcelDbProcSetting.resx">
+			<DependentUpon>ExcelDbProcSetting.cs</DependentUpon>
+		</EmbeddedResource>
+		<EmbeddedResource Include="Forms\ExcelVsDb\ExcelVsDbControl.resx">
+			<DependentUpon>ExcelVsDbControl.cs</DependentUpon>
+		</EmbeddedResource>
+		<EmbeddedResource Include="Forms\ExcelVsExcel\ExcelVsExcelControl.resx">
+			<DependentUpon>ExcelVsExcelControl.cs</DependentUpon>
+		</EmbeddedResource>
+		<EmbeddedResource Include="Forms\TestResultControl.resx">
+			<DependentUpon>TestResultControl.cs</DependentUpon>
+		</EmbeddedResource>
+		<EmbeddedResource Include="mainForm.resx">
+			<DependentUpon>mainForm.cs</DependentUpon>
+		</EmbeddedResource>
+		<EmbeddedResource Include="Properties\licenses.licx" />
+		<EmbeddedResource Include="Properties\Resources.resx">
+			<Generator>ResXFileCodeGenerator</Generator>
+			<LastGenOutput>Resources.Designer.cs</LastGenOutput>
+			<SubType>Designer</SubType>
+		</EmbeddedResource>
+		<Compile Include="Properties\Resources.Designer.cs">
+			<AutoGen>True</AutoGen>
+			<DependentUpon>Resources.resx</DependentUpon>
+			<DesignTime>True</DesignTime>
+		</Compile>
+		<None Include="App.config" />
+		<None Include="packages.config" />
+		<None Include="Properties\Settings.settings">
+			<Generator>SettingsSingleFileGenerator</Generator>
+			<LastGenOutput>Settings.Designer.cs</LastGenOutput>
+		</None>
+		<Compile Include="Properties\Settings.Designer.cs">
+			<AutoGen>True</AutoGen>
+			<DependentUpon>Settings.settings</DependentUpon>
+			<DesignTimeSharedInput>True</DesignTimeSharedInput>
+		</Compile>
+	</ItemGroup>
+	<ItemGroup>
+		<Content Include=".gitignore" />
+		<Content Include="EXCEL_257.ico" />
+		<Content Include="TestStock.sql" />
+	</ItemGroup>
+	<ItemGroup>
+		<ProjectReference Include="..\..\GH.Configs\GH.Configs.csproj">
+			<Project>{25671fd6-33a6-4a2e-a263-7d3f8568835c}</Project>
+			<Name>GH.Configs</Name>
+		</ProjectReference>
+		<ProjectReference Include="..\..\GH.Databse\GH.Database.csproj">
+			<Project>{7cbcd79a-e637-478d-8769-eee828383137}</Project>
+			<Name>GH.Database</Name>
+		</ProjectReference>
+		<ProjectReference Include="..\..\GH.Utils\GH.Utils.csproj">
+			<Project>{4c7bc602-1727-4fc4-aabd-de5d0c2c3f82}</Project>
+			<Name>GH.Utils</Name>
+		</ProjectReference>
+		<ProjectReference Include="..\..\GH.Windows\GH.Windows.csproj">
+			<Project>{ca2c0085-69b8-4d33-bd43-ec40763511b6}</Project>
+			<Name>GH.Windows</Name>
+		</ProjectReference>
+		<ProjectReference Include="..\..\XlShablon\GH.XlShablon.csproj">
+			<Project>{c66ec511-1f32-4cb1-8b0c-3e115e762ca8}</Project>
+			<Name>GH.XlShablon</Name>
+		</ProjectReference>
+	</ItemGroup>
+	<ItemGroup />
+	<Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+	<Target Name="AfterBuild">
+		<ItemGroup>
+			<MoveToLibFolder Include="$(OutputPath)*.dll ; $(OutputPath)*.xml" />
+		</ItemGroup>
+		<Move SourceFiles="@(MoveToLibFolder)" DestinationFolder="$(OutputPath)Libs" OverwriteReadOnlyFiles="true" />
+	</Target>
+	<Target Name = "Clean">
+		<RemoveDir Directories="$(builtdir)" />
+	</Target>
+	<!-- To modify your build process, add your task inside one of the targets below and uncomment it.
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">
   </Target>

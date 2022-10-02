@@ -2,7 +2,6 @@
 using FluentNHibernate.Cfg.Db;
 using GH.Utils;
 using NHibernate;
-using NHibernate.Tool.hbm2ddl;
 using System;
 
 namespace GH.Database
@@ -33,7 +32,6 @@ namespace GH.Database
                 .ExposeConfiguration(cfg =>
                 {
                     cfg.SetProperty(NHibernate.Cfg.Environment.CommandTimeout, "180");
-                    new SchemaValidator(cfg);
 
                 })
                 .Mappings(cfg => cfg.FluentMappings.AddFromAssemblyOf<TEntity>())

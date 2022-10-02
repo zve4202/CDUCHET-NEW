@@ -211,7 +211,7 @@
             // 
             // openXlDialog
             // 
-            this.openXlDialog.Filter = "Excel 2003|*.xls|Excel 2007|*.xlsx";
+            this.openXlDialog.Filter = "Excel 2003-2007|*.xls;*.xlsx|CSV Files csv-txt |*.csv;*.txt";
             // 
             // panelMenus
             // 

@@ -79,7 +79,6 @@
             // 
             // excelVsDbSetting
             // 
-            this.excelVsDbSetting.Clients = null;
             this.excelVsDbSetting.Dock = System.Windows.Forms.DockStyle.Top;
             this.excelVsDbSetting.Location = new System.Drawing.Point(0, 34);
             this.excelVsDbSetting.Name = "excelVsDbSetting";

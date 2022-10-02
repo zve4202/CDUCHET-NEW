@@ -12,6 +12,7 @@ namespace GH.XlShablon.Workers
             this.cancellationToken = cancellationToken;
             index = WorkersPull.CurrentWorker;
             ExcelRows = excelRows;
+            WorkersPull.AddToPool(this);
         }
 
         public string DbName { get; set; }
@@ -40,6 +41,7 @@ namespace GH.XlShablon.Workers
 
                 ProcessRow(excelRow);
             }
+            WorkersPull.RemoveFromPool(this);
         }
 
         protected virtual void ProcessRow(DataRow excelRow)

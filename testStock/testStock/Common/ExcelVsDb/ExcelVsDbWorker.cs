@@ -11,7 +11,7 @@ namespace Tester.Database
     {
         IFactoryCriator factory;
         INHRepository repository;
-        private object locker;
+        private object locker = new object();
         const string sql = "select id, scan_type, prix_qty, stock_qty, orea_qty " +
             "from check_stock_orea_by_barcorde(:scan_type, :barcode, :st_id, :client_id)";
 

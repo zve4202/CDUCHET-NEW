@@ -12,8 +12,7 @@ namespace GH.Database
         internal static IFactoryCriator BaseCriator;
         private static IDictionary<string, IFactoryCriator> _criators = new Dictionary<string, IFactoryCriator>();
 
-        private static ISessionFactory _baseFactory;
-        private static IDictionary<string, ISessionFactory> _factoryes = new Dictionary<string, ISessionFactory>();
+        private static IDictionary<string, ISessionFactory> _factories = new Dictionary<string, ISessionFactory>();
 
         internal static void SetBaseFactoryCriator(IFactoryCriator factory)
         {
@@ -35,20 +34,49 @@ namespace GH.Database
             if (_criators.Count == 0 && BaseCriator == null)
                 SetBaseFactoryCriator(value);
             else
-                _criators[value.DbName] = value;
+                _criators.Add(value.DbName, value);
         }
 
 
+        private static ISessionFactory _baseFactory;
         private static ISessionFactory BaseSessionFactory
         {
             get
             {
                 if (_baseFactory == null)
                     _baseFactory = BaseCriator.GetSessionFactory();
-
+                _dbName = null;
                 return _baseFactory;
             }
         }
+
+        public static ISessionFactory SessionFactory
+        {
+            get
+            {
+                ISessionFactory factory = null;
+                _factories.TryGetValue(_dbName, out factory);
+                if (factory == null)
+                {
+                    factory = _criators[_dbName].GetSessionFactory();
+                    _factories.Add(_dbName, factory);
+                }
+                _dbName = null;
+                return factory;
+            }
+        }
+
+        //private static ISessionFactory SessionFactory
+        //{
+        //    get
+        //    {
+        //        if (_baseFactory == null)
+        //            _baseFactory = BaseCriator.GetSessionFactory();
+
+        //        return _baseFactory;
+        //    }
+        //}
+
 
         public static ISession OpenMainSession()
         {
@@ -56,16 +84,27 @@ namespace GH.Database
             return session;
         }
 
+        private static string _dbName = null;
+        private static object session_locker = new object();
+
+        private static bool IsBase(string name)
+        {
+            _dbName = name;
+            return BaseCriator.DbName == name;
+        }
+
         public static ISession OpenSession(string name)
         {
             try
             {
-
                 ISession session = null;
-                if (BaseCriator.DbName == name)
-                    session = BaseSessionFactory.OpenSession();
-                else
-                    session = _factoryes[name].OpenSession();
+                lock (session_locker)
+                {
+                    if (IsBase(name))
+                        session = BaseSessionFactory.OpenSession();
+                    else
+                        session = SessionFactory.OpenSession();
+                }
                 return session;
             }
             catch (Exception ex)
@@ -96,7 +135,7 @@ namespace GH.Database
 
         public static void ClearCriators()
         {
-            _factoryes.Clear();
+            _factories.Clear();
             _criators.Clear();
         }
 

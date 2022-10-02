@@ -7,7 +7,7 @@ namespace GH.XlShablon.Workers
 {
     public static class WorkersPull
     {
-        private const int workersCount = 4;
+        private const int workersCount = 1;
         private static int currentWorker = 1;
         public static int MaxWorkerLine = 100;
         public static int CurrentWorker
@@ -54,12 +54,17 @@ namespace GH.XlShablon.Workers
             }
         }
 
-        public static void InitWorker(Worker worker)
+        public static void AddToPool(Worker worker)
         {
             if (workersPull == null)
                 workersPull = new List<Worker>();
             workersPull.Add(worker);
             Execute();
+        }
+
+        public static void RemoveFromPool(Worker worker)
+        {
+            workers.Remove(worker);
         }
 
     }

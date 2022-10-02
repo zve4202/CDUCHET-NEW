@@ -179,6 +179,7 @@ namespace GH.XlShablon
         int processStep = 10;
         internal void StartProcess(DataProcessor pocessor)
         {
+            ParentForm.FormClosing += ParentForm_FormClosing;
             pocessor.CreateOutsourceMap(DataMap);
 
             processStep = Math.Max(1, (ExcelData.Rows.Count / 100));
@@ -191,6 +192,28 @@ namespace GH.XlShablon
                 progressBar.Properties.Maximum = ExcelData.Rows.Count;
             });
 
+        }
+
+        private void ParentForm_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            if (isProcessing)
+            {
+                e.Cancel = true;
+                cts?.Cancel();
+                Task.Factory.StartNew(() =>
+                {
+                    while (isProcessing)
+                    {
+                        Application.DoEvents();
+                        Thread.Sleep(100);
+                    }
+
+                    this.InvokeIfRequired(() =>
+                    {
+                        ParentForm.Close();
+                    });
+                });
+            }
         }
 
         public async void LoadFromExcel()
@@ -519,12 +542,11 @@ namespace GH.XlShablon
             loadButton.Enabled = !isProcessing;
             stopButton.Enabled = isProcessing;
             clearButton.Enabled = !isProcessing && DataMap.Any(x => x.ExcelPanel != null);
-            acceptButton.Enabled = !isProcessing && ExcelData != null;
+            acceptButton.Enabled = !isProcessing && ExcelData != null && ExcelData.Rows.Count > 0;
             if (_extMenuControl is IExtMenuControl intf)
             {
-                intf.SetVisible(ExcelData != null);
+                intf.SetVisible(ExcelData != null && ExcelData.Rows.Count > 0);
                 intf.SetReadOnly(isProcessing);
-
             }
         }
 
@@ -583,13 +605,16 @@ namespace GH.XlShablon
             DataProcessor.ProcessExcel();
         }
 
-        public void SetStatus(string text)
+        public void SetStatus(string text, int current = 0)
         {
-            this.InvokeIfRequired(() =>
+            if (current % processStep == 0 || current == progressBar.Properties.Maximum)
             {
-                labelState.Text = text;
-            });
-            Application.DoEvents();
+                this.InvokeIfRequired(() =>
+                {
+                    labelState.Text = text;
+                });
+                Application.DoEvents();
+            }
         }
 
         public void SetProgress(int current = 0)
@@ -682,6 +707,7 @@ namespace GH.XlShablon
 
         internal void ClearExcelData()
         {
+            ParentForm.FormClosing -= ParentForm_FormClosing;
             if (!CancellationToken.IsCancellationRequested)
             {
                 ControlExecute(() =>

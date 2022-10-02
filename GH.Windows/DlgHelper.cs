@@ -12,7 +12,7 @@ namespace GH.Windows
         {
             get
             {
-                if (mainForm == null)
+                if (mainForm == null && Application.OpenForms.Count > 0)
                     mainForm = Application.OpenForms[0];
                 return mainForm;
             }
@@ -24,19 +24,27 @@ namespace GH.Windows
         {
             XtraMessageBoxArgs args = param as XtraMessageBoxArgs;
 
-            if (MainForm.InvokeRequired)
-                MainForm.Invoke((Action)delegate
+            if (MainForm == null)
+            {
+                if (MainForm.InvokeRequired)
                 {
+                    MainForm.Invoke((Action)delegate
+                    {
+                        DialogResult = XtraMessageBox.Show(args);
+                    });
+                }
+                else
                     DialogResult = XtraMessageBox.Show(args);
-                });
-            else
-                DialogResult = XtraMessageBox.Show(args);
+            }
         }
 
         private static XtraMessageBoxArgs GetArgs(string message, Icon icon, bool yesNo = false)
         {
             XtraMessageBoxArgs args = new XtraMessageBoxArgs();
-            args.Caption = MainForm.Text;
+            if (MainForm == null)
+                args.Caption = Application.ProductName;
+            else
+                args.Caption = MainForm.Text;
             args.Icon = icon;
             args.Text = message;
             if (yesNo)

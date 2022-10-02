@@ -1,6 +1,8 @@
 ﻿using DevExpress.XtraEditors;
+using GH.Database;
 using GH.XlShablon;
 using System.Collections.Generic;
+using System.Linq;
 using Tester.Database;
 using static GH.Windows.DevExpressHelper;
 
@@ -29,25 +31,8 @@ namespace Tester.forms
              );
         }
 
-        private Dictionary<int, string> _clients;
 
-        public Dictionary<int, string> Clients
-        {
-            get => _clients;
-            set
-            {
-                if (_clients != null)
-                    _clients = null;
-
-                _clients = value;
-                comboClients.Properties.DataSource = _clients;
-                if (_clients != null)
-                {
-                    _clients.Add(0, "Все реализаторы");
-                    comboClients.EditValue = 0;
-                }
-            }
-        }
+        public INHRepository IClients { get; internal set; }
 
         public void Reset()
         {
@@ -67,7 +52,15 @@ namespace Tester.forms
         public void SetVisible(bool value)
         {
             Visible = value || DesignMode;
+            if (Visible && !DesignMode)
+            {
+                Dictionary<int, string> clients = IClients.KeyIntLookupList();
+                clients.Add(0, "== ВСЕ РЕАЛИЗАТОРЫ");
+                comboClients.EditValue = 0;
+                comboClients.Properties.DataSource = clients.ToArray();
+            }
         }
+
 
         private void comboType_SelectedIndexChanged(object sender, System.EventArgs e)
         {

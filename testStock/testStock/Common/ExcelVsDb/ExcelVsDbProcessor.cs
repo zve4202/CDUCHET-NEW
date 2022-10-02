@@ -1,6 +1,5 @@
 ﻿using GH.Database;
 using GH.XlShablon.Workers;
-using System.Collections.Generic;
 using System.Data;
 using System.Windows.Forms;
 using Tester.Database;
@@ -23,7 +22,7 @@ namespace GH.XlShablon
                 _procSetting = value;
                 if (_procSetting != null)
                 {
-                    _procSetting.Clients = clients.KeyIntLookupList();
+                    _procSetting.IClients = clients;
                 }
             }
         }
@@ -32,21 +31,30 @@ namespace GH.XlShablon
         {
             factory = new FactoryCriatorTester();
             clients = new NHRepository<Client>(factory.DbName);
-            clients.GetSorting += GetClientSorting;
+            clients.GetSQL += GetClientSql;
+        }
+
+        private string GetClientSql(SqlTypes sqlTypes, BaseEntity entity)
+        {
+            switch (sqlTypes)
+            {
+                case SqlTypes.SelectSql:
+                    return "select distinct " +
+                        "c.client_id, " +
+                        "c.client_name " +
+                        "from clients c " +
+                        "inner join orea_clients oc on (c.client_id = oc.client_id) " +
+                        "order by c.client_name";
+                default:
+                    return null;
+            }
         }
 
         protected override Worker GetWorker(DataRow[] excelRows)
         {
-            return new Worker(this, Shablon.CancellationToken, excelRows);
+            return new ExcelVsDbWorker(this, Shablon.CancellationToken, excelRows);
         }
 
-        private Dictionary<string, bool> GetClientSorting()
-        {
-            return new Dictionary<string, bool>
-            {
-                {"Name", true}
-            };
-        }
 
         protected override bool AddCalculateFields(int index)
         {
