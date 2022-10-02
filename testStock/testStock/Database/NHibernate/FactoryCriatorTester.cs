@@ -12,6 +12,10 @@ namespace Tester.Database
         {
         }
 
+        public FactoryCriatorTester(string dbName) : base(dbName)
+        {
+        }
+
         protected override IPersistenceConfigurer GetConfig()
         {
             return new FirebirdConfiguration().ConnectionString(GetConnectionString());

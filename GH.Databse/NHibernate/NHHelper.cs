@@ -21,6 +21,15 @@ namespace GH.Database
             _criators.Remove(factory.DbName);
         }
 
+        public static IFactoryCriator GetFactoryCriator(string dbName)
+        {
+            if (BaseCriator.DbName == dbName)
+                return BaseCriator;
+            IFactoryCriator criator;
+            _criators.TryGetValue(dbName, out criator);
+            return criator;
+        }
+
         public static void SetFactoryCriator(IFactoryCriator value)
         {
             if (_criators.Count == 0 && BaseCriator == null)
@@ -84,6 +93,13 @@ namespace GH.Database
             }
             return false;
         }
+
+        public static void ClearCriators()
+        {
+            _factoryes.Clear();
+            _criators.Clear();
+        }
+
 
     }
 }

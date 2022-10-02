@@ -1,26 +1,36 @@
 ﻿using DevExpress.XtraEditors;
 using GH.XlShablon;
 using System.Collections.Generic;
+using Tester.Database;
 using static GH.Windows.DevExpressHelper;
 
 namespace Tester.forms
 {
     public partial class ExcelDbProcSetting : XtraUserControl, IExtMenuControl
     {
+        private static ExcelDbProcSetting _setting;
+        public static ExcelDbProcSetting Setting => _setting;
 
         public ExcelDbProcSetting()
         {
             InitializeComponent();
             Reset();
             SetupLookups(this);
+            _setting = this;
         }
 
-        public int TestType => comboType.SelectedIndex;
-
-        public int stock_id => comboStock.SelectedIndex;
-        public int client_id => (int)(comboClients.EditValue ?? 0);
+        internal TestParams GetTestParams(string barcode)
+        {
+            return new TestParams(
+                comboType.SelectedIndex,
+                barcode,
+                comboStock.SelectedIndex,
+                (int)(comboClients.EditValue ?? 0)
+             );
+        }
 
         private Dictionary<int, string> _clients;
+
         public Dictionary<int, string> Clients
         {
             get => _clients;
@@ -73,5 +83,6 @@ namespace Tester.forms
                 comboClients.EditValue = 0;
             }
         }
+
     }
 }

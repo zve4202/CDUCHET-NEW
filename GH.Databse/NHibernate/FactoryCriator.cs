@@ -2,6 +2,7 @@
 using FluentNHibernate.Cfg.Db;
 using GH.Utils;
 using NHibernate;
+using NHibernate.Tool.hbm2ddl;
 using System;
 
 namespace GH.Database
@@ -31,12 +32,8 @@ namespace GH.Database
                 .Database(GetConfig())
                 .ExposeConfiguration(cfg =>
                 {
-                    // This will set the command_timeout property on factory-level
                     cfg.SetProperty(NHibernate.Cfg.Environment.CommandTimeout, "180");
-                    // This will set the command_timeout property on system-level
-#pragma warning disable CS0618 // Тип или член устарел
-                    NHibernate.Cfg.Environment.Properties.Add(NHibernate.Cfg.Environment.CommandTimeout, "180");
-#pragma warning restore CS0618 // Тип или член устарел
+                    new SchemaValidator(cfg);
 
                 })
                 .Mappings(cfg => cfg.FluentMappings.AddFromAssemblyOf<TEntity>())

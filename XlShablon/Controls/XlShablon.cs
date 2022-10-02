@@ -206,7 +206,7 @@ namespace GH.XlShablon
             {
                 Task loadInfo = new Task(() =>
                 {
-                    var info = labelState.Text;
+                    string info = labelState.Text;
                     while (isProcessing && !CancellationToken.IsCancellationRequested)
                     {
                         if (ExcelData.Rows.Count == 0)
@@ -219,8 +219,6 @@ namespace GH.XlShablon
 
                             if (CancellationToken.IsCancellationRequested)
                             {
-
-
                                 SetStatus("Остановка...");
                             }
                             else

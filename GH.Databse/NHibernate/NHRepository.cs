@@ -538,19 +538,12 @@ namespace GH.Database
             {
                 using (ISession session = OpenSession())
                 {
-                    try
-                    {
-                        ITransaction transaction = session.BeginTransaction();
-                        IQuery query = session.CreateSQLQuery(sql).AddEntity(typeof(T));
-                        SetParams(entity, query);
+                    ITransaction transaction = session.BeginTransaction();
+                    IQuery query = session.CreateSQLQuery(sql).AddEntity(typeof(T));
+                    SetParams(entity, query);
 
-                        res = query.UniqueResult<T>();
-                        transaction.Commit();
-                    }
-                    catch (Exception ex)
-                    {
-                        Logger.Error("NHRepository", ex);
-                    }
+                    res = query.UniqueResult<T>();
+                    transaction.Commit();
                 }
             }
             catch (Exception ex)
@@ -619,6 +612,7 @@ namespace GH.Database
         {
             return InnerSelectAll().ToDictionary(x => (BaseEntity)x, x => x.Name);
         }
+
 
         #endregion
     }

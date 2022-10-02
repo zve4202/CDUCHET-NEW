@@ -94,6 +94,8 @@
     <Compile Include="Common\ExcelVsDb\ExcelVsDbShablon.cs">
       <SubType>UserControl</SubType>
     </Compile>
+    <Compile Include="Common\ExcelVsDb\ExcelVsDbWorker.cs" />
+    <Compile Include="Database\Models\TestResult.cs" />
     <Compile Include="Common\ExcelVsExcel\ExcelVsExcelProcessor.cs" />
     <Compile Include="Common\QtyParam.cs">
       <SubType>Component</SubType>
@@ -103,6 +105,7 @@
     <Compile Include="Database\Models\ResultSklad.cs" />
     <Compile Include="Database\Models\TestParams.cs" />
     <Compile Include="Database\NHibernate\FactoryCriatorTester.cs" />
+    <Compile Include="Database\Scheme\SchemeUpdater.cs" />
     <Compile Include="Forms\ExcelVsDb\ExcelDbProcSetting.cs">
       <SubType>UserControl</SubType>
     </Compile>

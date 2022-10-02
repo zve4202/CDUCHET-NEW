@@ -77,6 +77,8 @@
     <Compile Include="IDataProcessoor.cs" />
     <Compile Include="IExtMenuControl.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Workers\WorkersPull.cs" />
+    <Compile Include="Workers\Worker.cs" />
     <Service Include="{94E38DFF-614B-4cbd-B67C-F211BB35CE8B}" />
   </ItemGroup>
   <ItemGroup>
@@ -86,6 +88,10 @@
     <EmbeddedResource Include="Properties\licenses.licx" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\GH.Databse\GH.Database.csproj">
+      <Project>{7CBCD79A-E637-478D-8769-EEE828383137}</Project>
+      <Name>GH.Database</Name>
+    </ProjectReference>
     <ProjectReference Include="..\GH.Utils\GH.Utils.csproj">
       <Project>{4c7bc602-1727-4fc4-aabd-de5d0c2c3f82}</Project>
       <Name>GH.Utils</Name>

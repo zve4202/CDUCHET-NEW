@@ -70,6 +70,7 @@
     <Compile Include="Models\BaseEntity.cs" />
     <Compile Include="Attributes\UpdatableProperty.cs" />
     <Compile Include="Models\BaseUser.cs" />
+    <Compile Include="Models\ITestResult.cs" />
     <Compile Include="NHibernate\FactoryCriator.cs" />
     <Compile Include="NHibernate\IFactoryCriator.cs" />
     <Compile Include="NHibernate\INHRepository.cs" />

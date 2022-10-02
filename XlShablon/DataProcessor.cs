@@ -1,13 +1,15 @@
 ﻿using DevExpress.XtraGrid.Views.Grid;
+using GH.Database;
 using GH.Utils;
 using GH.Windows;
+using GH.XlShablon.Workers;
 using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Threading;
+using System.Reflection;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using static GH.Windows.WindowHelper;
@@ -43,6 +45,12 @@ namespace GH.XlShablon
                 _resultData = value;
             }
         }
+
+        public object GetKeyValue(DataRow excelRow)
+        {
+            return Shablon.DataMap.Where(m => m.ParamFunc == ParamFunctionType.IsKey).First().ExcelValue(excelRow);
+        }
+
         private DataTable _resultData;
 
 
@@ -64,6 +72,7 @@ namespace GH.XlShablon
 
             return true;
         }
+
 
         public virtual string ResultFileName
         {
@@ -96,45 +105,46 @@ namespace GH.XlShablon
                 intf.EndProcess();
         }
 
+        protected virtual Worker GetWorker(DataRow[] excelRows)
+        {
+            return new Worker(this, Shablon.CancellationToken, excelRows);
+        }
+
         internal async void ProcessExcel()
         {
             if (!IsDataReady())
                 return;
             BeginProcess();
-            int index = 0;
 
-            foreach (XlShablon item in _shablons)
+            for (int i = 0; i < _shablons.Count; i++)
             {
-                item.StartProcess(this);
-                DoSelect(item);
+                _shablonIndex = i;
 
-                CancellationToken cancellationToken = item.CancellationToken;
+                Shablon.StartProcess(this);
+                DoSelect(Shablon);
 
                 await Task.Factory.StartNew(() =>
                 {
-                    ProcessData(item, index, cancellationToken);
-                }, cancellationToken);
-                item.ClearExcelData();
-                if (cancellationToken.IsCancellationRequested)
-                    break;
-                index++;
+                    ProcessData();
+                }, Shablon.CancellationToken);
 
+                Shablon.ClearExcelData();
+
+                if (Shablon.CancellationToken.IsCancellationRequested)
+                    break;
             }
-            if (index < _shablons.Count)
-                DoSelect(_shablons[index]);
+            if (_shablonIndex < _shablons.Count)
+                DoSelect(Shablon);
             else
                 DoSelect(null);
             EndProcess();
 
         }
 
-
-
-        protected virtual void ProcessData(XlShablon shablon, int index, CancellationToken cancellationToken)
+        protected virtual void ProcessData()
         {
-            _shablon = shablon;
-            CreateResultTable(index);
-            FillResultTable(index, cancellationToken);
+            CreateResultTable();
+            CreateWorkersPull();
         }
 
         internal bool DoSelect(XlShablon shablon)
@@ -172,8 +182,8 @@ namespace GH.XlShablon
             Application.Exit();
         }
 
-        XlShablon _shablon;
-        protected XlShablon Shablon => _shablon;
+        private int _shablonIndex = 0;
+        protected XlShablon Shablon => _shablons.Count == 0 ? null : _shablons[_shablonIndex];
         List<string> otherFields = new List<string>();
 
         protected virtual void CalculateRow(DataRow row, int index)
@@ -181,18 +191,18 @@ namespace GH.XlShablon
             throw new NotImplementedException();
         }
 
-        internal void CreateResultTable(int index)
+        internal void CreateResultTable()
         {
-            _shablon.SetStatus("Ждите: идёт подготовка данных...");
+            Shablon.SetStatus("Ждите: идёт подготовка данных...");
             if (ResultData == null)
             {
                 ResultData = new DataTable();
             }
 
-            List<FieldParam> mapFields = _shablon.DataMap.ToList();
+            List<FieldParam> mapFields = Shablon.DataMap.ToList();
             List<FieldParam> outsourceFields = mapFields.Where(f => f.ParamFunc == ParamFunctionType.OutSourceData).ToList();
 
-            otherFields = (_shablon.ExcelData.Columns.Cast<DataColumn>().Select(x => x.ColumnName)).ToList();
+            otherFields = (Shablon.ExcelData.Columns.Cast<DataColumn>().Select(x => x.ColumnName)).ToList();
             int columnIndex = 0;
             foreach (FieldParam field in mapFields)
             {
@@ -203,17 +213,17 @@ namespace GH.XlShablon
                 if (ResultData.Columns.IndexOf(field.Name) == -1)
                 {
                     column = new DataColumn(field.Name, field.DataType);
-                    if (field.ParamFunc == FieldParam.ParamFunctionType.ToSumm)
+                    if (field.ParamFunc == ParamFunctionType.ToSumm)
                     {
-                        column.Caption = field.Caption(index + 1);
+                        column.Caption = field.Caption(_shablonIndex + 1);
                         column.AllowDBNull = true;
 
                     }
                     else
                         column.Caption = field.Caption();
                     ResultData.Columns.Add(column);
-                    ResultData.Columns[field.Name].SetOrdinal(columnIndex + (index));
-                    if (field.ParamFunc == FieldParam.ParamFunctionType.IsKey)
+                    ResultData.Columns[field.Name].SetOrdinal(columnIndex + (_shablonIndex));
+                    if (field.ParamFunc == ParamFunctionType.IsKey)
                     {
                         column.AllowDBNull = false;
                         column.Unique = true;
@@ -225,9 +235,9 @@ namespace GH.XlShablon
                 columnIndex++;
             }
 
-            if (ResultData.Columns.Count < _shablon.ExcelData.Columns.Count + outsourceFields.Count + index)
+            if (ResultData.Columns.Count < Shablon.ExcelData.Columns.Count + outsourceFields.Count + _shablonIndex)
             {
-                while (ResultData.Columns.Count < _shablon.ExcelData.Columns.Count + outsourceFields.Count + index)
+                while (ResultData.Columns.Count < Shablon.ExcelData.Columns.Count + outsourceFields.Count + _shablonIndex)
                 {
                     columnIndex = ResultData.Columns.Count;
                     string columnName = string.Format("column{0}", columnIndex);
@@ -248,162 +258,279 @@ namespace GH.XlShablon
             throw new NotImplementedException();
         }
 
-        Dictionary<object, DataRow> keys = new Dictionary<object, DataRow>();
-        internal void FillResultTable(int index, CancellationToken cancellationToken)
-        {
-            if (index == 0)
-                keys.Clear();
-            _shablon.SetStatus("Ждите: идёт обработка данных...");
+        int currentProcessed = 0;
+        int totalForProcess = 0;
 
-            List<FieldParam> baseFields = _shablon.DataMap.Where(m => m.ParamFunc != FieldParam.ParamFunctionType.OutSourceData).ToList();
-            List<FieldParam> outsourceFields = _shablon.DataMap.Where(m => m.ParamFunc == FieldParam.ParamFunctionType.OutSourceData).ToList();
+        List<FieldParam> baseFields = null;
+        List<FieldParam> outsourceFields = null;
+        Dictionary<object, DataRow> keys = new Dictionary<object, DataRow>();
+        private object locker;
+
+        internal void CreateWorkersPull()
+        {
+            if (_shablonIndex == 0)
+                keys.Clear();
+            currentProcessed = 0;
+
+            Shablon.SetStatus("Ждите: идёт обработка данных...");
+
+            baseFields = Shablon.DataMap.Where(m => m.ParamFunc != ParamFunctionType.OutSourceData).ToList();
+            outsourceFields = Shablon.DataMap.Where(m => m.ParamFunc == ParamFunctionType.OutSourceData).ToList();
 
             if (baseFields.Count > 0)
             {
-                DataRow[] excelList = _shablon.ExcelData.Select();
-                int pos = 0;
+                DataRow[] excelList = Shablon.ExcelData.Select();
+                totalForProcess = excelList.Length;
+                List<DataRow> workerList = new List<DataRow>();
+
                 foreach (DataRow excelRow in excelList)
                 {
-                    if (cancellationToken.IsCancellationRequested)
+                    if (Shablon.CancellationToken.IsCancellationRequested)
                         return;
-
-                    DataRow resultRow = null;
-                    try
+                    workerList.Add(excelRow);
+                    if (workerList.Count == WorkersPull.MaxWorkerLine)
                     {
-                        foreach (FieldParam field in baseFields)
-                        {
-                            object value = field.ExcelValue(excelRow);
-                            switch (field.ParamFunc)
-                            {
-                                case FieldParam.ParamFunctionType.IsKey:
-                                    keys.TryGetValue(value, out resultRow);
-                                    if (resultRow != null)
-                                        continue;
-                                    resultRow = ResultData.NewRow();
-                                    resultRow.SetField<object>(field.Name, value);
-                                    int i = _shablon.DataMap.Count + index;
-                                    foreach (string item in otherFields)
-                                    {
-                                        object val = null;
-                                        try
-                                        {
-                                            val = excelRow.Field<object>(item);
-                                        }
-                                        catch { }
-                                        resultRow.SetField<object>(i, val);
-                                        i++;
-                                    }
-                                    ResultData.Rows.Add(resultRow);
-                                    keys.Add(value, resultRow);
-                                    break;
-                                case FieldParam.ParamFunctionType.ToSumm:
-                                    if (resultRow.RowState == DataRowState.Added)
-                                        resultRow.SetField<object>(field.Name, value);
-                                    else
-                                    {
-                                        int qty = 0;
-                                        int.TryParse(value.ToString(), out qty);
-                                        try
-                                        {
-                                            qty += resultRow.Field<int>(field.Name);
-                                        }
-                                        catch { }
-                                        resultRow.SetField<int>(field.Name, qty);
-                                    }
-                                    break;
-                                default:
-                                    break;
-                            }
-                        }
-
-                        if (outsourceFields.Count > 0)
-                        {
-                            SetOutsourceFieds(resultRow);
-                        }
+                        Worker worker = GetWorker(workerList.ToArray());
+                        workerList.Clear();
                     }
-                    catch (Exception e)
-                    {
-                        Logger.Error("FillResultTable", e);
-                        continue;
-                    }
-
-
-
-                    //DataRow resultRow = (from line in ResultData.AsEnumerable()
-                    //                     where line.Field<string>(barcodeName) == barcode
-                    //                     select line).FirstOrDefault();
-
-
-                    //if (resultRow != null)
-                    //{
-                    //    try
-                    //    {
-                    //        qty += resultRow.Field<int>(qtyName);
-                    //    }
-                    //    catch { }
-                    //    resultRow.SetField<int>(qtyName, qty);
-                    //}
-                    //else
-                    //{
-                    //    resultRow = ResultData.NewRow();
-                    //    resultRow.SetField<string>(barcodeName, barcode);
-                    //    resultRow.SetField<int>(qtyName, qty);
-                    //    int i = 2 + index;
-                    //    foreach (var item in otherFields)
-                    //    {
-                    //        string val = "";
-                    //        try
-                    //        {
-                    //            val = excelRow.Field<string>(item);
-                    //        }
-                    //        catch { }
-                    //        resultRow.SetField<string>(i, val);
-                    //        i++;
-                    //    }
-                    //    ResultData.Rows.Add(resultRow);
-                    //    keys.Add(barcode, resultRow);
-                    //}
-                    resultRow.AcceptChanges();
-                    _shablon.ExcelData.Rows.Remove(excelRow);
-                    _shablon.SetProgress(pos++);
                 }
 
-                /// заменянм название колонки ParamFunctionType.ToSumm на уникальное 
-                /// чтобы потом добавить ещё одну такую же из другого набора (если есть такой)
-                foreach (var field in baseFields)
+                if (workerList.Count > 0)
                 {
+                    Worker worker = GetWorker(workerList.ToArray());
+                    workerList.Clear();
+                }
+            }
+
+        }
+
+        public void ProcessRow(DataRow excelRow, object autsourceData = null)
+        {
+            DataRow resultRow = null;
+            try
+            {
+                foreach (FieldParam field in baseFields)
+                {
+                    object value = field.ExcelValue(excelRow);
                     switch (field.ParamFunc)
                     {
-                        case FieldParam.ParamFunctionType.ToSumm:
-                            string columnName = string.Format("{0}{1}", field.Name, index + 1);
-                            var column = ResultData.Columns[field.Name];
-                            column.ColumnName = columnName;
+                        case ParamFunctionType.IsKey:
+                            keys.TryGetValue(value, out resultRow);
+                            if (resultRow != null)
+                                continue;
+                            resultRow = ResultData.NewRow();
+                            resultRow.SetField<object>(field.Name, value);
+                            int i = Shablon.DataMap.Count + _shablonIndex;
+                            foreach (string item in otherFields)
+                            {
+                                object val = null;
+                                try
+                                {
+                                    val = excelRow.Field<object>(item);
+                                }
+                                catch { }
+                                resultRow.SetField<object>(i, val);
+                                i++;
+                            }
+                            ResultData.Rows.Add(resultRow);
+                            keys.Add(value, resultRow);
+                            break;
+                        case ParamFunctionType.ToSumm:
+                            if (resultRow.RowState == DataRowState.Added)
+                                resultRow.SetField<object>(field.Name, value);
+                            else
+                            {
+                                int qty = 0;
+                                int.TryParse(value.ToString(), out qty);
+                                try
+                                {
+                                    qty += resultRow.Field<int>(field.Name);
+                                }
+                                catch { }
+                                resultRow.SetField<int>(field.Name, qty);
+                            }
                             break;
                         default:
                             break;
                     }
                 }
 
-                if (baseFields.Count > 1 && baseFields.Count - 1 == index)
+                if (autsourceData is ITestResult testResult)
                 {
-                    if (AddCalculateFields(index))
+                    foreach (PropertyInfo prop in testResult.GetScanTypeProperties())
                     {
-                        pos = 0;
-                        foreach (var row in ResultData.Select())
-                        {
-                            CalculateRow(row, index);
-                            _shablon.SetProgress(pos++);
-
-                        }
+                        resultRow.SetField<object>(prop.Name, prop.GetValue(autsourceData));
                     }
                 }
-
             }
+            catch (Exception e)
+            {
+                Logger.Error("FillResultTable", e);
+            }
+
+            lock (locker)
+            {
+                currentProcessed++;
+                Shablon.SetStatus("Ждите: идёт обработка данных..." +
+                    Environment.NewLine +
+                    string.Format("Обработано {0} из {1}", currentProcessed, totalForProcess));
+            }
+
         }
 
-        protected virtual void SetOutsourceFieds(DataRow row)
-        {
-            throw new NotImplementedException();
-        }
+        //internal void FillResultTable(CancellationToken cancellationToken)
+        //{
+        //    /*
+
+
+        //    if (baseFields.Count > 0)
+        //    {
+        //        DataRow[] excelList = Shablon.ExcelData.Select();
+        //        int pos = 0;
+        //        foreach (DataRow excelRow in excelList)
+        //        {
+        //            if (cancellationToken.IsCancellationRequested)
+        //                return;
+
+
+        //            DataRow resultRow = null;
+        //            try
+        //            {
+        //                foreach (FieldParam field in baseFields)
+        //                {
+        //                    object value = field.ExcelValue(excelRow);
+        //                    switch (field.ParamFunc)
+        //                    {
+        //                        case FieldParam.ParamFunctionType.IsKey:
+        //                            keys.TryGetValue(value, out resultRow);
+        //                            if (resultRow != null)
+        //                                continue;
+        //                            resultRow = ResultData.NewRow();
+        //                            resultRow.SetField<object>(field.Name, value);
+        //                            int i = Shablon.DataMap.Count + index;
+        //                            foreach (string item in otherFields)
+        //                            {
+        //                                object val = null;
+        //                                try
+        //                                {
+        //                                    val = excelRow.Field<object>(item);
+        //                                }
+        //                                catch { }
+        //                                resultRow.SetField<object>(i, val);
+        //                                i++;
+        //                            }
+        //                            ResultData.Rows.Add(resultRow);
+        //                            keys.Add(value, resultRow);
+        //                            break;
+        //                        case FieldParam.ParamFunctionType.ToSumm:
+        //                            if (resultRow.RowState == DataRowState.Added)
+        //                                resultRow.SetField<object>(field.Name, value);
+        //                            else
+        //                            {
+        //                                int qty = 0;
+        //                                int.TryParse(value.ToString(), out qty);
+        //                                try
+        //                                {
+        //                                    qty += resultRow.Field<int>(field.Name);
+        //                                }
+        //                                catch { }
+        //                                resultRow.SetField<int>(field.Name, qty);
+        //                            }
+        //                            break;
+        //                        default:
+        //                            break;
+        //                    }
+        //                }
+
+        //                if (outsourceFields.Count > 0)
+        //                {
+        //                    SetOutsourceFieds(resultRow);
+        //                }
+        //            }
+        //            catch (Exception e)
+        //            {
+        //                Logger.Error("FillResultTable", e);
+        //                continue;
+        //            }
+
+
+
+        //            //DataRow resultRow = (from line in ResultData.AsEnumerable()
+        //            //                     where line.Field<string>(barcodeName) == barcode
+        //            //                     select line).FirstOrDefault();
+
+
+        //            //if (resultRow != null)
+        //            //{
+        //            //    try
+        //            //    {
+        //            //        qty += resultRow.Field<int>(qtyName);
+        //            //    }
+        //            //    catch { }
+        //            //    resultRow.SetField<int>(qtyName, qty);
+        //            //}
+        //            //else
+        //            //{
+        //            //    resultRow = ResultData.NewRow();
+        //            //    resultRow.SetField<string>(barcodeName, barcode);
+        //            //    resultRow.SetField<int>(qtyName, qty);
+        //            //    int i = 2 + index;
+        //            //    foreach (var item in otherFields)
+        //            //    {
+        //            //        string val = "";
+        //            //        try
+        //            //        {
+        //            //            val = excelRow.Field<string>(item);
+        //            //        }
+        //            //        catch { }
+        //            //        resultRow.SetField<string>(i, val);
+        //            //        i++;
+        //            //    }
+        //            //    ResultData.Rows.Add(resultRow);
+        //            //    keys.Add(barcode, resultRow);
+        //            //}
+        //            resultRow.AcceptChanges();
+        //            Shablon.ExcelData.Rows.Remove(excelRow);
+        //            Shablon.SetProgress(pos++);
+        //        }
+
+        //        /// заменянм название колонки ParamFunctionType.ToSumm на уникальное 
+        //        /// чтобы потом добавить ещё одну такую же из другого набора (если есть такой)
+        //        foreach (var field in baseFields)
+        //        {
+        //            switch (field.ParamFunc)
+        //            {
+        //                case FieldParam.ParamFunctionType.ToSumm:
+        //                    string columnName = string.Format("{0}{1}", field.Name, index + 1);
+        //                    var column = ResultData.Columns[field.Name];
+        //                    column.ColumnName = columnName;
+        //                    break;
+        //                default:
+        //                    break;
+        //            }
+        //        }
+
+        //        if (baseFields.Count > 1 && baseFields.Count - 1 == index)
+        //        {
+        //            if (AddCalculateFields(index))
+        //            {
+        //                pos = 0;
+        //                foreach (var row in ResultData.Select())
+        //                {
+        //                    CalculateRow(row, index);
+        //                    Shablon.SetProgress(pos++);
+
+        //                }
+        //            }
+        //        }
+
+        //    }
+        //    */
+        //}
+
+        //protected virtual void SetOutsourceFieds(DataRow row)
+        //{
+        //    throw new NotImplementedException();
+        //}
     }
 }

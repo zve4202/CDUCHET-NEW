@@ -1,8 +1,6 @@
 ﻿using DevExpress.XtraEditors;
-using GH.Database;
 using GH.XlShablon;
 using System.Windows.Forms;
-using Tester.Database;
 
 namespace Tester.forms
 {
@@ -13,10 +11,10 @@ namespace Tester.forms
 
         public ExcelVsDbControl()
         {
-            IFactoryCriator factory = new FactoryCriatorTester();
+
             InitializeComponent();
             pages.SelectedTabPage = excel_1_Page;
-            dataProcessor = new ExcelVsDbProcessor(this, factory);
+            dataProcessor = new ExcelVsDbProcessor(this);
             dataProcessor.ProcSetting = excelVsDbSetting;
             excel_1.DataProcessor = dataProcessor;
         }
