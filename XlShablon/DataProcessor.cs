@@ -139,6 +139,7 @@ namespace GH.XlShablon
 
         protected Task ProcessData()
         {
+
             CreateResultTable();
             return CreateWorkersPull();
         }
@@ -250,9 +251,6 @@ namespace GH.XlShablon
             throw new NotImplementedException();
         }
 
-        //int currentProcessed = 0;
-        //int totalForProcess = 0;
-
         List<FieldParam> baseFields = null;
         List<FieldParam> outsourceFields = null;
         Dictionary<object, DataRow> keys = new Dictionary<object, DataRow>();
@@ -262,7 +260,6 @@ namespace GH.XlShablon
         {
             if (_shablonIndex == 0)
                 keys.Clear();
-            //currentProcessed = 0;
 
             Shablon.SetStatus("Ждите: идёт обработка данных...");
 
@@ -367,8 +364,6 @@ namespace GH.XlShablon
             }
 
             Shablon.SetNextStep();
-
-
         }
     }
 }

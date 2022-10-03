@@ -1,6 +1,7 @@
 ﻿using GH.Database;
 using GH.XlShablon.Workers;
 using System.Data;
+using System.Reflection;
 using System.Windows.Forms;
 using Tester.Database;
 using Tester.forms;
@@ -11,6 +12,14 @@ namespace GH.XlShablon
     {
         IFactoryCriator factory;
         INHRepository clients;
+
+        public ExcelVsDbProcessor(Control control) : base(control)
+        {
+            factory = new FactoryCriatorTester();
+            clients = new NHRepository<Client>(factory.DbName);
+            clients.GetSQL += GetClientSql;
+        }
+
 
 
         private ExcelDbProcSetting _procSetting;
@@ -27,11 +36,14 @@ namespace GH.XlShablon
             }
         }
 
-        public ExcelVsDbProcessor(Control control) : base(control)
+
+        public override void CreateOutsourceMap(FieldsMap dataMap)
         {
-            factory = new FactoryCriatorTester();
-            clients = new NHRepository<Client>(factory.DbName);
-            clients.GetSQL += GetClientSql;
+            foreach (PropertyInfo item in ProcSetting.GetScanTypeProperties())
+            {
+                dataMap.add
+
+            }
         }
 
         private string GetClientSql(SqlTypes sqlTypes, BaseEntity entity)

@@ -3,6 +3,7 @@ using GH.Database;
 using GH.XlShablon;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Windows.Forms;
 using Tester.Database;
 using static GH.Windows.DevExpressHelper;
@@ -20,6 +21,14 @@ namespace Tester.forms
             Reset();
             SetupLookups(this);
             _setting = this;
+        }
+        internal IEnumerable<PropertyInfo> GetScanTypeProperties()
+        {
+            return (new TestResult()
+            {
+                ScanType = comboType.SelectedIndex
+            }).GetScanTypeProperties();
+
         }
 
         internal TestParams GetTestParams(string barcode)
