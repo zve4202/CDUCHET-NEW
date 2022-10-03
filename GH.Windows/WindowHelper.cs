@@ -70,7 +70,11 @@ namespace GH.Windows
                     Process[] processes = Process.GetProcessesByName(processName);
                     foreach (Process proc in processes)
                     {
-                        proc.Kill();
+                        try
+                        {
+                            proc.Kill();
+                        }
+                        catch { }
                     }
                 }
             }

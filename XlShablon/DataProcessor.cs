@@ -10,7 +10,6 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using static GH.Windows.WindowHelper;
@@ -129,7 +128,8 @@ namespace GH.XlShablon
                 if (Shablon.CancellationToken.IsCancellationRequested)
                     break;
             }
-            if (_shablonIndex < _shablons.Count)
+
+            if (_shablonIndex < _shablons.Count - 1)
                 DoSelect(Shablon);
             else
                 DoSelect(null);
@@ -250,8 +250,8 @@ namespace GH.XlShablon
             throw new NotImplementedException();
         }
 
-        int currentProcessed = 0;
-        int totalForProcess = 0;
+        //int currentProcessed = 0;
+        //int totalForProcess = 0;
 
         List<FieldParam> baseFields = null;
         List<FieldParam> outsourceFields = null;
@@ -262,7 +262,7 @@ namespace GH.XlShablon
         {
             if (_shablonIndex == 0)
                 keys.Clear();
-            currentProcessed = 0;
+            //currentProcessed = 0;
 
             Shablon.SetStatus("Ждите: идёт обработка данных...");
 
@@ -273,8 +273,9 @@ namespace GH.XlShablon
             {
                 if (baseFields.Count > 0)
                 {
-                    DataRow[] excelList = Shablon.ExcelData.Select();
-                    totalForProcess = excelList.Length;
+                    DataRow[] excelList = Shablon.GetExcelList();
+                    //DataRow[] excelList = Shablon.ExcelData.Select();
+                    //totalForProcess = excelList.Length;
                     List<DataRow> workerList = new List<DataRow>();
 
                     foreach (DataRow excelRow in excelList)
@@ -296,12 +297,8 @@ namespace GH.XlShablon
                     }
                 }
 
-                while (currentProcessed < totalForProcess)
-                {
-                    if (Shablon.CancellationToken.IsCancellationRequested)
-                        return;
-                    Thread.Sleep(200);
-                }
+                Shablon.WaitForEnd();
+
             }, Shablon.CancellationToken);
         }
 
@@ -366,18 +363,11 @@ namespace GH.XlShablon
             }
             catch (Exception e)
             {
-                Logger.Error("FillResultTable", e);
+                Logger.Error(nameof(ProcessRow), e);
             }
 
-            lock (locker)
-            {
-                currentProcessed++;
-                Shablon.SetProgress(currentProcessed);
-                Shablon.SetStatus("Ждите: идёт обработка данных..." +
-                Environment.NewLine +
-                string.Format("Обработано {0} из {1}", currentProcessed, totalForProcess),
-                currentProcessed);
-            }
+            Shablon.SetNextStep();
+
 
         }
     }

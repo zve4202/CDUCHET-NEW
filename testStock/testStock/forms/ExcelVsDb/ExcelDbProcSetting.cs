@@ -3,6 +3,7 @@ using GH.Database;
 using GH.XlShablon;
 using System.Collections.Generic;
 using System.Linq;
+using System.Windows.Forms;
 using Tester.Database;
 using static GH.Windows.DevExpressHelper;
 
@@ -51,8 +52,10 @@ namespace Tester.forms
 
         public void SetVisible(bool value)
         {
+            bool needClientsGet = !Visible && value;
             Visible = value || DesignMode;
-            if (Visible && !DesignMode)
+            Application.DoEvents();
+            if (needClientsGet && !DesignMode)
             {
                 Dictionary<int, string> clients = IClients.KeyIntLookupList();
                 clients.Add(0, "== ВСЕ РЕАЛИЗАТОРЫ");

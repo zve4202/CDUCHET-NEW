@@ -12,6 +12,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using static GH.Utils.AppHelper;
 using static GH.Utils.FileHelper;
+using static GH.Utils.ProcessHelper;
 using static GH.Windows.WindowHelper;
 
 namespace GH.XlShablon
@@ -176,23 +177,40 @@ namespace GH.XlShablon
             }
         }
 
-        int processStep = 10;
+        int processStepBy = 10;
+        int currentStep = 0;
+        int totalSteps = 0;
+        DateTime processStarted;
         internal void StartProcess(DataProcessor pocessor)
         {
             ParentForm.FormClosing += ParentForm_FormClosing;
             pocessor.CreateOutsourceMap(DataMap);
 
-            processStep = Math.Max(1, (ExcelData.Rows.Count / 100));
             isProcessing = true;
             this.InvokeIfRequired(() =>
             {
                 RefreshControlsState();
-                progressBar.Visible = true;
-                progressBar.Position = 0;
-                progressBar.Properties.Maximum = ExcelData.Rows.Count;
             });
 
         }
+
+        internal DataRow[] GetExcelList()
+        {
+            processStarted = DateTime.Now;
+            DataRow[] result = ExcelData.Select();
+            totalSteps = result.Length;
+            currentStep = 0;
+            processStepBy = Math.Max(1, (totalSteps / 100));
+            this.InvokeIfRequired(() =>
+            {
+                progressBar.Visible = true;
+                progressBar.Position = 0;
+                progressBar.Properties.Maximum = totalSteps;
+            });
+
+            return result;
+        }
+
 
         private void ParentForm_FormClosing(object sender, FormClosingEventArgs e)
         {
@@ -308,6 +326,7 @@ namespace GH.XlShablon
             labelState.BringToFront();
         }
 
+
         private void TrackBar_EditValueChanged(object sender, EventArgs e)
         {
             FillXlMap();
@@ -319,6 +338,16 @@ namespace GH.XlShablon
             {
                 DataRow row = ExcelData.Rows[(int)trackBar.EditValue];
                 item.Text = row[item.Column].ToString();
+            }
+        }
+
+        internal void WaitForEnd()
+        {
+            while (isProcessing && currentStep < totalSteps)
+            {
+                if (CancellationToken.IsCancellationRequested)
+                    return;
+                Thread.Sleep(200);
             }
         }
 
@@ -460,6 +489,15 @@ namespace GH.XlShablon
             FixDataTypes();
         }
 
+        internal void SetNextStep()
+        {
+            lock (locker)
+            {
+                currentStep++;
+                SetProgress();
+            }
+        }
+
         private void FixDataTypes()
         {
             bool convert = false;
@@ -577,6 +615,7 @@ namespace GH.XlShablon
         }
 
         private DataProcessor _dataProcessor;
+        private object locker = new object();
 
         public bool MapIsReady()
         {
@@ -605,26 +644,30 @@ namespace GH.XlShablon
             DataProcessor.ProcessExcel();
         }
 
-        public void SetStatus(string text, int current = 0)
+        const string processingText = "Ждите: идёт обработка данных...";
+
+        public void SetStatus(string text)
         {
-            if (current % processStep == 0 || current == progressBar.Properties.Maximum)
+            this.InvokeIfRequired(() =>
             {
-                this.InvokeIfRequired(() =>
-                {
-                    labelState.Text = text;
-                });
-                Application.DoEvents();
-            }
+                labelState.Text = text;
+            });
+            Application.DoEvents();
         }
 
-        public void SetProgress(int current = 0)
+        private void SetProgress()
         {
-            if (current % processStep == 0 || current == progressBar.Properties.Maximum)
+            if (currentStep % processStepBy == 0 || currentStep == totalSteps)
             {
                 this.InvokeIfRequired(() =>
                 {
-                    progressBar.Position = current + 1;
-                    progressBar.Position = current;
+                    labelState.Text = processingText
+                        + Environment.NewLine + ProcessedText(currentStep, totalSteps)
+                        + Environment.NewLine + DurationText(processStarted)
+                        + Environment.NewLine + RemainingText(processStarted, currentStep, totalSteps);
+
+                    progressBar.Position = currentStep + 1;
+                    progressBar.Position = currentStep;
                 });
                 Application.DoEvents();
             }

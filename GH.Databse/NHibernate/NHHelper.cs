@@ -45,25 +45,21 @@ namespace GH.Database
             {
                 if (_baseFactory == null)
                     _baseFactory = BaseCriator.GetSessionFactory();
-                _dbName = null;
                 return _baseFactory;
             }
         }
 
-        public static ISessionFactory SessionFactory
+        public static ISessionFactory SessionFactory(string dbName)
         {
-            get
+            ISessionFactory factory = null;
+            _factories.TryGetValue(dbName, out factory);
+            if (factory == null)
             {
-                ISessionFactory factory = null;
-                _factories.TryGetValue(_dbName, out factory);
-                if (factory == null)
-                {
-                    factory = _criators[_dbName].GetSessionFactory();
-                    _factories.Add(_dbName, factory);
-                }
-                _dbName = null;
-                return factory;
+                factory = _criators[dbName].GetSessionFactory();
+                _factories.Add(dbName, factory);
             }
+            return factory;
+
         }
 
         //private static ISessionFactory SessionFactory
@@ -84,12 +80,10 @@ namespace GH.Database
             return session;
         }
 
-        private static string _dbName = null;
         private static object session_locker = new object();
 
         private static bool IsBase(string name)
         {
-            _dbName = name;
             return BaseCriator.DbName == name;
         }
 
@@ -103,7 +97,7 @@ namespace GH.Database
                     if (IsBase(name))
                         session = BaseSessionFactory.OpenSession();
                     else
-                        session = SessionFactory.OpenSession();
+                        session = SessionFactory(name).OpenSession();
                 }
                 return session;
             }
