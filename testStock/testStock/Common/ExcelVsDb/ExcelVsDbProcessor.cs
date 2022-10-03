@@ -1,10 +1,12 @@
 ﻿using GH.Database;
 using GH.XlShablon.Workers;
 using System.Data;
+using System.Linq;
 using System.Reflection;
 using System.Windows.Forms;
 using Tester.Database;
 using Tester.forms;
+using static GH.XlShablon.FieldParam;
 
 namespace GH.XlShablon
 {
@@ -39,10 +41,17 @@ namespace GH.XlShablon
 
         public override void CreateOutsourceMap(FieldsMap dataMap)
         {
-            foreach (PropertyInfo item in ProcSetting.GetScanTypeProperties())
+            foreach (PropertyInfo prop in ProcSetting.GetScanTypeProperties())
             {
-                dataMap.add
-
+                FieldParam field = new FieldParam(
+                    Shablon,
+                    prop.GetCustomAttributes<UpdatablePropertyAttribute>().First().Caption,
+                    prop.Name,
+                    prop.PropertyType, 10, true)
+                {
+                    ParamFunc = ParamFunctionType.OutSourceData
+                };
+                dataMap.Add(field);
             }
         }
 
