@@ -2,7 +2,7 @@
 
 namespace GH.Utils
 {
-    public class ProcessHelper
+    public class ProgressHelper
     {
         public static string ProcessedText(int processed, int total)
         {

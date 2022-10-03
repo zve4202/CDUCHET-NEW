@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using static GH.Utils.AppHelper;
 using static GH.Utils.FileHelper;
-using static GH.Utils.ProcessHelper;
+using static GH.Utils.ProgressHelper;
 using static GH.Windows.WindowHelper;
 
 namespace GH.XlShablon
