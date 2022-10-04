@@ -9,11 +9,11 @@ namespace GH.XlShablon
         {
         }
 
-        protected override void CalculateRow(DataRow row, int index)
+        protected override void CalculateRow(DataRow row)
         {
-            int idx = Shablon.DataMap.Count + index;
+            int idx = Shablon.DataMap.Count + ShablonIndex;
 
-            if (index == Shablon.DataMap.Count - 1)
+            if (ShablonIndex == Shablon.DataMap.Count - 1)
             {
                 int qty1 = 0;
                 int.TryParse(row[1].ToString(), out qty1);
@@ -25,13 +25,13 @@ namespace GH.XlShablon
 
         }
 
-        protected override bool AddCalculateFields(int index)
+        protected override bool AddCalculateFields()
         {
             DataColumn column = new DataColumn("sumOfQty", typeof(int));
             column.Caption = "Difference";
             column.DefaultValue = 0;
             ResultData.Columns.Add(column);
-            int idx = Shablon.DataMap.Count + index;
+            int idx = Shablon.DataMap.Count + ShablonIndex;
             column.SetOrdinal(idx);
             return true;
         }

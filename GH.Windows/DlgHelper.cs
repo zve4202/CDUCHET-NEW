@@ -1,5 +1,4 @@
 ﻿using DevExpress.XtraEditors;
-using System;
 using System.Drawing;
 using System.Windows.Forms;
 
@@ -7,7 +6,7 @@ namespace GH.Windows
 {
     public static class DlgHelper
     {
-        private static Form mainForm;
+        private static Form mainForm = null;
         public static Form MainForm
         {
             get
@@ -18,24 +17,19 @@ namespace GH.Windows
             }
         }
 
-        public static DialogResult DialogResult { get; private set; }
-
-        private static void MessageBox(object param)
+        private static DialogResult MessageBox(object param)
         {
             XtraMessageBoxArgs args = param as XtraMessageBoxArgs;
+            DialogResult result = DialogResult.None;
 
-            if (MainForm == null)
+            if (MainForm != null)
             {
-                if (MainForm.InvokeRequired)
+                MainForm.InvokeIfRequired(() =>
                 {
-                    MainForm.Invoke((Action)delegate
-                    {
-                        DialogResult = XtraMessageBox.Show(args);
-                    });
-                }
-                else
-                    DialogResult = XtraMessageBox.Show(args);
+                    result = XtraMessageBox.Show(args);
+                });
             }
+            return result;
         }
 
         private static XtraMessageBoxArgs GetArgs(string message, Icon icon, bool yesNo = false)
@@ -67,8 +61,7 @@ namespace GH.Windows
         public static bool DlgYesNo(string message)
         {
             XtraMessageBoxArgs args = GetArgs(message, SystemIcons.Question, true);
-            MessageBox(args);
-            return DialogResult == DialogResult.Yes;
+            return MessageBox(args) == DialogResult.Yes;
         }
 
         public static void DlgInfo(string message)

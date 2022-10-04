@@ -55,15 +55,13 @@ namespace Tester.forms
                 }
                 if (item.Name.ToLower().Contains("qty"))
                 {
-                    //string caption = item.GetCaption().Replace(".", "");
-                    //caption = (string.IsNullOrEmpty(caption) ? "Сумма" : caption) + ": ";
                     item.Summary.Add(
-                        //new GridColumnSummaryItem(DevExpress.Data.SummaryItemType.Sum, "", caption + "{0:0}")
                         new GridColumnSummaryItem(DevExpress.Data.SummaryItemType.Sum, "", "{0:0}")
                     );
                 }
             }
             ParentForm.WindowState = FormWindowState.Maximized;
+            Application.DoEvents();
             mainView.BestFitColumns(true);
             btnSave.Enabled = _dataProcessor.ResultData.Rows.Count > 0;
         }

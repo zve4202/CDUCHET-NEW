@@ -1,6 +1,7 @@
 ﻿using DevExpress.XtraEditors;
 using ExcelDataReader;
 using GH.Windows;
+using GH.XlShablon.Workers;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -200,7 +201,8 @@ namespace GH.XlShablon
             DataRow[] result = ExcelData.Select();
             totalSteps = result.Length;
             currentStep = 0;
-            processStepBy = Math.Max(1, (totalSteps / 100));
+            processStepBy = Math.Min(Math.Max(1, (totalSteps / 100)), 500);
+            WorkersPull.MaxWorkerLine = processStepBy;
             this.InvokeIfRequired(() =>
             {
                 progressBar.Visible = true;

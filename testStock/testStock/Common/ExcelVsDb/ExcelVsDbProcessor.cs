@@ -22,6 +22,7 @@ namespace GH.XlShablon
             clients.GetSQL += GetClientSql;
         }
 
+        protected override ProcessScanType ProcessScanType => ProcessScanType.AsIs;
 
 
         private ExcelDbProcSetting _procSetting;
@@ -77,7 +78,7 @@ namespace GH.XlShablon
         }
 
 
-        protected override bool AddCalculateFields(int index)
+        protected override bool AddCalculateFields()
         {
             return false;
         }

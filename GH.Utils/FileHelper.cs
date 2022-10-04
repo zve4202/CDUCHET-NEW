@@ -54,6 +54,8 @@ namespace GH.Utils
         {
             FileInfo file = new FileInfo(fileName);
             fileName = Path.Combine(StartupPath, dirName, Path.GetFileName(fileName));
+            if (file.FullName == fileName)
+                return;
             CheckDirectory(fileName);
             if (File.Exists(fileName))
                 File.Delete(fileName);

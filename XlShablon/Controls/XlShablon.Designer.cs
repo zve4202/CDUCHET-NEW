@@ -57,16 +57,16 @@
             // panelProc
             // 
             this.panelProc.Dock = System.Windows.Forms.DockStyle.Left;
-            this.panelProc.Location = new System.Drawing.Point(5, 43);
+            this.panelProc.Location = new System.Drawing.Point(5, 39);
             this.panelProc.Name = "panelProc";
-            this.panelProc.Size = new System.Drawing.Size(311, 221);
+            this.panelProc.Size = new System.Drawing.Size(311, 225);
             this.panelProc.TabIndex = 0;
             // 
             // splitter1
             // 
-            this.splitter1.Location = new System.Drawing.Point(316, 43);
+            this.splitter1.Location = new System.Drawing.Point(316, 39);
             this.splitter1.Name = "splitter1";
-            this.splitter1.Size = new System.Drawing.Size(6, 221);
+            this.splitter1.Size = new System.Drawing.Size(6, 225);
             this.splitter1.TabIndex = 2;
             this.splitter1.TabStop = false;
             // 
@@ -74,7 +74,7 @@
             // 
             this.trackBar.Dock = System.Windows.Forms.DockStyle.Right;
             this.trackBar.EditValue = null;
-            this.trackBar.Location = new System.Drawing.Point(585, 43);
+            this.trackBar.Location = new System.Drawing.Point(585, 39);
             this.trackBar.Name = "trackBar";
             this.trackBar.Properties.BorderStyle = DevExpress.XtraEditors.Controls.BorderStyles.NoBorder;
             this.trackBar.Properties.InvertLayout = true;
@@ -83,7 +83,7 @@
             this.trackBar.Properties.Orientation = System.Windows.Forms.Orientation.Vertical;
             this.trackBar.Properties.TickFrequency = 10;
             this.trackBar.Properties.TickStyle = System.Windows.Forms.TickStyle.TopLeft;
-            this.trackBar.Size = new System.Drawing.Size(45, 221);
+            this.trackBar.Size = new System.Drawing.Size(45, 225);
             this.trackBar.TabIndex = 4;
             this.trackBar.TabStop = false;
             // 
@@ -91,9 +91,9 @@
             // 
             this.panelExcel.Controls.Add(this.labelState);
             this.panelExcel.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.panelExcel.Location = new System.Drawing.Point(322, 43);
+            this.panelExcel.Location = new System.Drawing.Point(322, 39);
             this.panelExcel.Name = "panelExcel";
-            this.panelExcel.Size = new System.Drawing.Size(263, 221);
+            this.panelExcel.Size = new System.Drawing.Size(263, 225);
             this.panelExcel.TabIndex = 5;
             // 
             // labelState
@@ -109,7 +109,7 @@
             this.labelState.Dock = System.Windows.Forms.DockStyle.Fill;
             this.labelState.Location = new System.Drawing.Point(2, 2);
             this.labelState.Name = "labelState";
-            this.labelState.Size = new System.Drawing.Size(259, 217);
+            this.labelState.Size = new System.Drawing.Size(259, 221);
             this.labelState.TabIndex = 0;
             this.labelState.Text = "Нет данных...";
             // 
@@ -122,22 +122,22 @@
             this.panelButtons.Controls.Add(this.stopButton);
             this.panelButtons.Controls.Add(this.loadButton);
             this.panelButtons.Dock = System.Windows.Forms.DockStyle.Top;
-            this.panelButtons.Location = new System.Drawing.Point(2, 2);
+            this.panelButtons.Location = new System.Drawing.Point(0, 0);
             this.panelButtons.Name = "panelButtons";
             this.panelButtons.Padding = new System.Windows.Forms.Padding(5);
-            this.panelButtons.Size = new System.Drawing.Size(621, 34);
+            this.panelButtons.Size = new System.Drawing.Size(625, 34);
             this.panelButtons.TabIndex = 1;
             // 
             // progressBar
             // 
-            this.progressBar.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-            | System.Windows.Forms.AnchorStyles.Left)
+            this.progressBar.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.progressBar.Location = new System.Drawing.Point(398, 8);
             this.progressBar.Name = "progressBar";
             this.progressBar.Properties.ShowTitle = true;
             this.progressBar.Properties.TextOrientation = DevExpress.Utils.Drawing.TextOrientation.Horizontal;
-            this.progressBar.Size = new System.Drawing.Size(215, 18);
+            this.progressBar.Size = new System.Drawing.Size(219, 18);
             this.progressBar.TabIndex = 6;
             this.progressBar.Visible = false;
             // 
@@ -154,8 +154,8 @@
             this.acceptButton.Size = new System.Drawing.Size(92, 22);
             this.acceptButton.TabIndex = 0;
             this.acceptButton.TabStop = false;
-            this.acceptButton.Text = "Применить";
-            this.acceptButton.ToolTip = "Применить шаблон к данным и продолжить";
+            this.acceptButton.Text = "Приступить";
+            this.acceptButton.ToolTip = "Применить шаблон к данным и приступить к обработке";
             this.acceptButton.Click += new System.EventHandler(this.acceptButton_Click);
             // 
             // clearButton
@@ -221,7 +221,7 @@
             this.panelMenus.Dock = System.Windows.Forms.DockStyle.Top;
             this.panelMenus.Location = new System.Drawing.Point(5, 5);
             this.panelMenus.Name = "panelMenus";
-            this.panelMenus.Size = new System.Drawing.Size(625, 38);
+            this.panelMenus.Size = new System.Drawing.Size(625, 34);
             this.panelMenus.TabIndex = 6;
             // 
             // XlShablon

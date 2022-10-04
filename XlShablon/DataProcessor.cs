@@ -18,6 +18,7 @@ using static GH.XlShablon.FieldParam;
 
 namespace GH.XlShablon
 {
+    public enum ProcessScanType { Unique, AsIs };
     public class DataProcessor
     {
         public DataProcessor(Control control)
@@ -118,7 +119,7 @@ namespace GH.XlShablon
 
             for (int i = 0; i < _shablons.Count; i++)
             {
-                _shablonIndex = i;
+                ShablonIndex = i;
 
                 Shablon.StartProcess(this);
                 DoSelect(Shablon);
@@ -129,7 +130,7 @@ namespace GH.XlShablon
                     break;
             }
 
-            if (_shablonIndex < _shablons.Count - 1)
+            if (ShablonIndex < _shablons.Count - 1)
                 DoSelect(Shablon);
             else
                 DoSelect(null);
@@ -170,20 +171,25 @@ namespace GH.XlShablon
                 view.ExportToXlsx(file);
             }, "EXCEL");
 
-            //view.ExportToXlsx(file, new XlsxExportOptions(TextExportMode.Value, false));
             Process.Start(file);
             Application.Exit();
         }
 
         private int _shablonIndex = 0;
-        protected XlShablon Shablon => _shablons.Count == 0 ? null : _shablons[_shablonIndex];
+        protected int ShablonIndex
+        {
+            get { return _shablonIndex; }
+            private set { _shablonIndex = value; }
+        }
+        protected XlShablon Shablon => _shablons.Count == 0 ? null : _shablons[ShablonIndex];
         List<string> otherFields = new List<string>();
 
-        protected virtual void CalculateRow(DataRow row, int index)
+        protected virtual void CalculateRow(DataRow row)
         {
             throw new NotImplementedException();
         }
 
+        protected virtual ProcessScanType ProcessScanType => ProcessScanType.Unique;
         internal void CreateResultTable()
         {
             Shablon.SetStatus("Ждите: идёт подготовка данных...");
@@ -208,15 +214,15 @@ namespace GH.XlShablon
                     column = new DataColumn(field.Name, field.DataType);
                     if (field.ParamFunc == ParamFunctionType.ToSumm)
                     {
-                        column.Caption = field.Caption(_shablonIndex + 1);
+                        column.Caption = field.Caption(ShablonIndex + 1);
                         column.AllowDBNull = true;
 
                     }
                     else
                         column.Caption = field.Caption();
                     ResultData.Columns.Add(column);
-                    ResultData.Columns[field.Name].SetOrdinal(columnIndex + (_shablonIndex));
-                    if (field.ParamFunc == ParamFunctionType.IsKey)
+                    ResultData.Columns[field.Name].SetOrdinal(columnIndex + ShablonIndex);
+                    if (field.ParamFunc == ParamFunctionType.IsKey && ProcessScanType == ProcessScanType.Unique)
                     {
                         column.AllowDBNull = false;
                         column.Unique = true;
@@ -228,15 +234,42 @@ namespace GH.XlShablon
                 columnIndex++;
             }
 
-            if (ResultData.Columns.Count < Shablon.ExcelData.Columns.Count + outsourceFields.Count + _shablonIndex)
+            if (ResultData.Columns.Count < Shablon.ExcelData.Columns.Count + outsourceFields.Count + ShablonIndex)
             {
-                while (ResultData.Columns.Count < Shablon.ExcelData.Columns.Count + outsourceFields.Count + _shablonIndex)
+                if (ProcessScanType == ProcessScanType.AsIs)
                 {
-                    columnIndex = ResultData.Columns.Count;
-                    string columnName = string.Format("column{0}", columnIndex);
-                    DataColumn column = new DataColumn(columnName, typeof(string));
-                    column.Caption = string.Format("column-{0}", columnIndex);
-                    ResultData.Columns.Add(column);
+                    foreach (string fieldName in otherFields)
+                    {
+                        DataColumn excelColumn = Shablon.ExcelData.Columns[fieldName];
+                        Type resultType = typeof(string);
+                        if (excelColumn.DataType == typeof(int))
+                            resultType = excelColumn.DataType;
+                        else if (excelColumn.DataType == typeof(double))
+                        {
+                            if (Shablon.ExcelData.Select().Any((row) => row.Field<double>(fieldName) % 1 > 0))
+                                resultType = excelColumn.DataType;
+                            else
+                                resultType = typeof(int);
+                        }
+
+
+                        columnIndex = ResultData.Columns.Count;
+                        string columnName = string.Format("column{0}", columnIndex);
+                        DataColumn resultColumn = new DataColumn(columnName, resultType);
+                        resultColumn.Caption = string.Format("column-{0}", columnIndex);
+                        ResultData.Columns.Add(resultColumn);
+                    }
+                }
+                else
+                {
+                    while (ResultData.Columns.Count < Shablon.ExcelData.Columns.Count + outsourceFields.Count + ShablonIndex)
+                    {
+                        columnIndex = ResultData.Columns.Count;
+                        string columnName = string.Format("column{0}", columnIndex);
+                        DataColumn column = new DataColumn(columnName, typeof(string));
+                        column.Caption = string.Format("column-{0}", columnIndex);
+                        ResultData.Columns.Add(column);
+                    }
                 }
             }
         }
@@ -246,7 +279,7 @@ namespace GH.XlShablon
 
         }
 
-        protected virtual bool AddCalculateFields(int index)
+        protected virtual bool AddCalculateFields()
         {
             throw new NotImplementedException();
         }
@@ -254,11 +287,10 @@ namespace GH.XlShablon
         List<FieldParam> baseFields = null;
         List<FieldParam> outsourceFields = null;
         Dictionary<object, DataRow> keys = new Dictionary<object, DataRow>();
-        private object locker = new object();
 
         internal Task CreateWorkersPull()
         {
-            if (_shablonIndex == 0)
+            if (ShablonIndex == 0)
                 keys.Clear();
 
             Shablon.SetStatus("Ждите: идёт обработка данных...");
@@ -271,8 +303,6 @@ namespace GH.XlShablon
                 if (baseFields.Count > 0)
                 {
                     DataRow[] excelList = Shablon.GetExcelList();
-                    //DataRow[] excelList = Shablon.ExcelData.Select();
-                    //totalForProcess = excelList.Length;
                     List<DataRow> workerList = new List<DataRow>();
 
                     foreach (DataRow excelRow in excelList)
@@ -296,73 +326,106 @@ namespace GH.XlShablon
 
                 Shablon.WaitForEnd();
 
-            }, Shablon.CancellationToken);
-        }
-
-        public void ProcessRow(DataRow excelRow, object autsourceData = null)
-        {
-            DataRow resultRow = null;
-            try
-            {
-                foreach (FieldParam field in baseFields)
+                foreach (var field in baseFields)
                 {
-                    object value = field.ExcelValue(excelRow);
                     switch (field.ParamFunc)
                     {
-                        case ParamFunctionType.IsKey:
-                            keys.TryGetValue(value, out resultRow);
-                            if (resultRow != null)
-                                continue;
-                            resultRow = ResultData.NewRow();
-                            resultRow.SetField<object>(field.Name, value);
-                            int i = Shablon.DataMap.Count + _shablonIndex;
-                            foreach (string item in otherFields)
-                            {
-                                object val = null;
-                                try
-                                {
-                                    val = excelRow.Field<object>(item);
-                                }
-                                catch { }
-                                resultRow.SetField<object>(i, val);
-                                i++;
-                            }
-                            ResultData.Rows.Add(resultRow);
-                            keys.Add(value, resultRow);
-                            break;
                         case ParamFunctionType.ToSumm:
-                            if (resultRow.RowState == DataRowState.Added)
-                                resultRow.SetField<object>(field.Name, value);
-                            else
-                            {
-                                int qty = 0;
-                                int.TryParse(value.ToString(), out qty);
-                                try
-                                {
-                                    qty += resultRow.Field<int>(field.Name);
-                                }
-                                catch { }
-                                resultRow.SetField<int>(field.Name, qty);
-                            }
+                            string columnName = string.Format("{0}{1}", field.Name, ShablonIndex + 1);
+                            var column = ResultData.Columns[field.Name];
+                            column.ColumnName = columnName;
                             break;
                         default:
                             break;
                     }
                 }
 
-                if (autsourceData is ITestResult testResult)
+                if (baseFields.Count > 1 && baseFields.Count - 1 == ShablonIndex)
                 {
-                    foreach (PropertyInfo prop in testResult.GetScanTypeProperties())
+                    if (AddCalculateFields())
                     {
-                        resultRow.SetField<object>(prop.Name, prop.GetValue(autsourceData));
+                        foreach (var row in ResultData.Select())
+                        {
+                            CalculateRow(row);
+                            Shablon.SetNextStep();
+
+                        }
                     }
                 }
-            }
-            catch (Exception e)
-            {
-                Logger.Error(nameof(ProcessRow), e);
-            }
+            }, Shablon.CancellationToken);
+        }
 
+        private object addRowLocker = new object();
+        public void ProcessRow(DataRow excelRow, object autsourceData = null)
+        {
+
+            lock (addRowLocker)
+            {
+                DataRow resultRow = null;
+                try
+                {
+                    foreach (FieldParam field in baseFields)
+                    {
+                        object value = field.ExcelValue(excelRow);
+                        switch (field.ParamFunc)
+                        {
+                            case ParamFunctionType.IsKey:
+                                if (ProcessScanType == ProcessScanType.Unique)
+                                {
+                                    keys.TryGetValue(value, out resultRow);
+                                    if (resultRow != null)
+                                        continue;
+                                }
+                                resultRow = ResultData.NewRow();
+                                resultRow.SetField<object>(field.Name, value);
+                                int i = Shablon.DataMap.Count + ShablonIndex;
+                                foreach (string item in otherFields)
+                                {
+                                    object val = null;
+                                    try
+                                    {
+                                        val = excelRow.Field<object>(item);
+                                    }
+                                    catch { }
+                                    resultRow.SetField<object>(i, val);
+                                    i++;
+                                }
+                                ResultData.Rows.Add(resultRow);
+                                keys.Add(value, resultRow);
+                                break;
+                            case ParamFunctionType.ToSumm:
+                                if (resultRow.RowState == DataRowState.Added)
+                                    resultRow.SetField<object>(field.Name, value);
+                                else
+                                {
+                                    int qty = 0;
+                                    int.TryParse(value.ToString(), out qty);
+                                    try
+                                    {
+                                        qty += resultRow.Field<int>(field.Name);
+                                    }
+                                    catch { }
+                                    resultRow.SetField<int>(field.Name, qty);
+                                }
+                                break;
+                            default:
+                                break;
+                        }
+                    }
+
+                    if (autsourceData is ITestResult testResult)
+                    {
+                        foreach (PropertyInfo prop in testResult.GetScanTypeProperties())
+                        {
+                            resultRow.SetField<object>(prop.Name, prop.GetValue(autsourceData));
+                        }
+                    }
+                }
+                catch (Exception e)
+                {
+                    Logger.Error(nameof(ProcessRow), e);
+                }
+            }
             Shablon.SetNextStep();
         }
     }
