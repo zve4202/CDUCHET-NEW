@@ -13,7 +13,6 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using static GH.Utils.AppHelper;
 using static GH.Utils.FileHelper;
-using static GH.Utils.ProgressHelper;
 using static GH.Windows.WindowHelper;
 
 namespace GH.XlShablon
@@ -35,7 +34,13 @@ namespace GH.XlShablon
         }
 
         [Browsable(false)]
-        public CancellationToken CancellationToken => cts.Token;
+        public bool IsCancellationRequested
+        {
+            get
+            {
+                return cts.IsCancellationRequested;
+            }
+        }
 
         [Browsable(false)]
         public DataProcessor DataProcessor
@@ -131,8 +136,6 @@ namespace GH.XlShablon
         }
 
 
-        private bool isProcessing = false;
-
         [Browsable(false)]
         public string FileName
         {
@@ -145,6 +148,7 @@ namespace GH.XlShablon
             }
         }
 
+        private ProgressHolder progressHolder;
         #endregion
 
 
@@ -153,6 +157,10 @@ namespace GH.XlShablon
             _dataMap = getDataMap();
             InitializeComponent();
             AllowDrop = true;
+            progressHolder = new ProgressHolder(this, progressBar);
+            InfoControl ctrl = progressHolder.GetInfoControl();
+            panelExcel.Controls.Add(ctrl);
+            ctrl.Dock = DockStyle.Fill;
             CreateParamSlots();
             Disposed += XlShablon_Disposed;
             RefreshControlsState();
@@ -178,16 +186,11 @@ namespace GH.XlShablon
             }
         }
 
-        int processStepBy = 10;
-        int currentStep = 0;
-        int totalSteps = 0;
-        DateTime processStarted;
         internal void StartProcess(DataProcessor pocessor)
         {
             ParentForm.FormClosing += ParentForm_FormClosing;
             pocessor.CreateOutsourceMap(DataMap);
 
-            isProcessing = true;
             this.InvokeIfRequired(() =>
             {
                 RefreshControlsState();
@@ -197,32 +200,31 @@ namespace GH.XlShablon
 
         internal DataRow[] GetExcelList()
         {
-            processStarted = DateTime.Now;
             DataRow[] result = ExcelData.Select();
-            totalSteps = result.Length;
-            currentStep = 0;
-            processStepBy = Math.Min(Math.Max(1, (totalSteps / 100)), 500);
-            WorkersPull.MaxWorkerLine = processStepBy;
-            this.InvokeIfRequired(() =>
-            {
-                progressBar.Visible = true;
-                progressBar.Position = 0;
-                progressBar.Properties.Maximum = totalSteps;
-            });
+            progressHolder.Start(result.Length);
+
+            WorkersPull.MaxWorkerLine = progressHolder.StepBy;
 
             return result;
         }
 
+        internal DataRow[] GetDataList(DataTable dataTable)
+        {
+            DataRow[] result = dataTable.Select();
+            progressHolder.Restart(result.Length);
+
+            return result;
+        }
 
         private void ParentForm_FormClosing(object sender, FormClosingEventArgs e)
         {
-            if (isProcessing)
+            if (progressHolder.InProgress)
             {
                 e.Cancel = true;
                 cts?.Cancel();
                 Task.Factory.StartNew(() =>
                 {
-                    while (isProcessing)
+                    while (progressHolder.InProgress)
                     {
                         Application.DoEvents();
                         Thread.Sleep(100);
@@ -236,11 +238,13 @@ namespace GH.XlShablon
             }
         }
 
+
+
         public async void LoadFromExcel()
         {
             Clear();
             SetStatus("Ждите: идет загрузка данных...");
-            isProcessing = true;
+            progressHolder.StartLoading();
             RefreshControlsState();
 
             ExcelData = new DataTable();
@@ -249,8 +253,8 @@ namespace GH.XlShablon
             {
                 Task loadInfo = new Task(() =>
                 {
-                    string info = labelState.Text;
-                    while (isProcessing && !CancellationToken.IsCancellationRequested)
+                    string info = progressHolder.Message;
+                    while (progressHolder.InProgress && !IsCancellationRequested)
                     {
                         if (ExcelData.Rows.Count == 0)
                             Thread.Sleep(500);
@@ -260,40 +264,41 @@ namespace GH.XlShablon
                         if (ExcelData != null)
                         {
 
-                            if (CancellationToken.IsCancellationRequested)
+                            if (IsCancellationRequested)
                             {
-                                SetStatus("Остановка...");
+                                progressHolder.Summary = "Остановка...";
                             }
                             else
                                 if (ExcelData.Rows.Count == 0)
                             {
-                                if (labelState.Text == info)
+                                if (progressHolder.Message == info)
                                     SetStatus("");
                                 else
                                     SetStatus(info);
                             }
                             else
-                                SetStatus(info + Environment.NewLine + $"Загружено {ExcelData.Rows.Count} записей...");
+                                progressHolder.Summary = $"Загружено {ExcelData.Rows.Count} записей...";
                         };
                     }
 
-                    if (!CancellationToken.IsCancellationRequested)
-                        SetStatus($"Загружено {ExcelData.Rows.Count} записей...");
+                    if (!IsCancellationRequested)
+                        progressHolder.Summary = $"Загружено {ExcelData.Rows.Count} записей...";
 
-                }, CancellationToken);
+                });
 
 
                 loadInfo.Start();
                 await Task.Factory.StartNew(() =>
                 {
                     LoadData();
-                    isProcessing = false;
-                }, CancellationToken);
+                    SetStatus($"Загружено {ExcelData.Rows.Count} записей...");
+                    progressHolder.Stop();
+                });
 
             }
             finally
             {
-                if (CancellationToken.IsCancellationRequested)
+                if (IsCancellationRequested)
                 {
                     Clear();
                     ExcelData = null;
@@ -325,7 +330,7 @@ namespace GH.XlShablon
             panelExcel.ResumeLayout();
             trackBar.EditValueChanged += TrackBar_EditValueChanged;
             FillXlMap();
-            labelState.BringToFront();
+            progressHolder.BringToFront();
         }
 
 
@@ -345,9 +350,9 @@ namespace GH.XlShablon
 
         internal void WaitForEnd()
         {
-            while (isProcessing && currentStep < totalSteps)
+            while (progressHolder.InProgress)
             {
-                if (CancellationToken.IsCancellationRequested)
+                if (IsCancellationRequested)
                     return;
                 Thread.Sleep(200);
             }
@@ -384,8 +389,7 @@ namespace GH.XlShablon
                     FillDataTable(excelReader, new ExcelDataTableConfiguration()
                     {
                         EmptyColumnNamePrefix = "Field",
-                        //FilterRow = rowReader => i++ < 300,
-                        UseHeaderRow = true
+                        UseHeaderRow = checkHeader.Checked
                     });
 
                     excelReader.Close();
@@ -424,7 +428,7 @@ namespace GH.XlShablon
             var columnIndices = new List<int>();
             while (reader.Read())
             {
-                if (CancellationToken.IsCancellationRequested)
+                if (IsCancellationRequested)
                     return;
 
                 if (first)
@@ -493,11 +497,7 @@ namespace GH.XlShablon
 
         internal void SetNextStep()
         {
-            lock (locker)
-            {
-                currentStep++;
-                SetProgress();
-            }
+            progressHolder.NextStep();
         }
 
         private void FixDataTypes()
@@ -579,14 +579,15 @@ namespace GH.XlShablon
 
         internal void RefreshControlsState()
         {
-            loadButton.Enabled = !isProcessing;
-            stopButton.Enabled = isProcessing;
-            clearButton.Enabled = !isProcessing && DataMap.Any(x => x.ExcelPanel != null);
-            acceptButton.Enabled = !isProcessing && ExcelData != null && ExcelData.Rows.Count > 0;
+            loadButton.Enabled = !progressHolder.InProgress;
+            checkHeader.Enabled = !progressHolder.InProgress;
+            stopButton.Enabled = progressHolder.InProgress;
+            clearButton.Enabled = !progressHolder.InProgress && DataMap.Any(x => x.ExcelPanel != null);
+            acceptButton.Enabled = !progressHolder.InProgress && ExcelData != null && ExcelData.Rows.Count > 0;
             if (_extMenuControl is IExtMenuControl intf)
             {
                 intf.SetVisible(ExcelData != null && ExcelData.Rows.Count > 0);
-                intf.SetReadOnly(isProcessing);
+                intf.SetReadOnly(progressHolder.InProgress);
             }
         }
 
@@ -650,29 +651,7 @@ namespace GH.XlShablon
 
         public void SetStatus(string text)
         {
-            this.InvokeIfRequired(() =>
-            {
-                labelState.Text = text;
-            });
-            Application.DoEvents();
-        }
-
-        private void SetProgress()
-        {
-            if (currentStep % processStepBy == 0 || currentStep == totalSteps)
-            {
-                this.InvokeIfRequired(() =>
-                {
-                    labelState.Text = processingText
-                        + Environment.NewLine + ProcessedText(currentStep, totalSteps)
-                        + Environment.NewLine + DurationText(processStarted)
-                        + Environment.NewLine + RemainingText(processStarted, currentStep, totalSteps);
-
-                    progressBar.Position = currentStep + 1;
-                    progressBar.Position = currentStep;
-                });
-                Application.DoEvents();
-            }
+            progressHolder.Message = text;
         }
 
         public bool PrepareTableForTest()
@@ -753,18 +732,21 @@ namespace GH.XlShablon
         internal void ClearExcelData()
         {
             ParentForm.FormClosing -= ParentForm_FormClosing;
-            if (!CancellationToken.IsCancellationRequested)
+            if (!IsCancellationRequested)
             {
                 ControlExecute(() =>
                 {
                     MoveFile(ProcessedFolder, FileName);
                 }, "EXCEL");
             }
-            isProcessing = false;
+
+            if (progressHolder.InProgress)
+                progressHolder.Stop();
+
             progressBar.Visible = false;
             Clear();
             ExcelData = null;
-            if (CancellationToken.IsCancellationRequested)
+            if (IsCancellationRequested)
                 SetStatus("Отмена...");
             else
                 SetStatus("Готово...");
@@ -775,5 +757,11 @@ namespace GH.XlShablon
         }
 
         #endregion
+
+        private void checkHeader_Click(object sender, EventArgs e)
+        {
+            checkHeader.Checked = !checkHeader.Checked;
+            checkHeader.Text = checkHeader.Checked ? "Есть заголовки" : "Нет заголовков";
+        }
     }
 }

@@ -60,6 +60,21 @@
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="Controls\FieldsMap.cs" />
+    <Compile Include="ProgressHolder\IinfoAttribute.cs" />
+    <Compile Include="ProgressHolder\InfoControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="ProgressHolder\InfoControl.Designer.cs">
+      <DependentUpon>InfoControl.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ProgressHolder\InfoItem.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="ProgressHolder\InfoItem.Designer.cs">
+      <DependentUpon>InfoItem.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ProgressHolder\InfoNames.cs" />
+    <Compile Include="ProgressHolder\ProgressHolder.cs" />
     <Compile Include="Controls\XlPlace.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -84,6 +99,12 @@
   <ItemGroup>
     <EmbeddedResource Include="Controls\XlShablon.resx">
       <DependentUpon>XlShablon.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ProgressHolder\InfoControl.resx">
+      <DependentUpon>InfoControl.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ProgressHolder\InfoItem.resx">
+      <DependentUpon>InfoItem.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\licenses.licx" />
   </ItemGroup>

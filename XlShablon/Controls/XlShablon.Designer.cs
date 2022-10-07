@@ -33,8 +33,8 @@
             this.splitter1 = new System.Windows.Forms.Splitter();
             this.trackBar = new DevExpress.XtraEditors.TrackBarControl();
             this.panelExcel = new DevExpress.XtraEditors.PanelControl();
-            this.labelState = new DevExpress.XtraEditors.LabelControl();
             this.panelButtons = new DevExpress.XtraEditors.PanelControl();
+            this.checkHeader = new DevExpress.XtraEditors.CheckButton();
             this.progressBar = new DevExpress.XtraEditors.ProgressBarControl();
             this.acceptButton = new DevExpress.XtraEditors.SimpleButton();
             this.clearButton = new DevExpress.XtraEditors.SimpleButton();
@@ -46,7 +46,6 @@
             ((System.ComponentModel.ISupportInitialize)(this.trackBar)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.trackBar.Properties)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.panelExcel)).BeginInit();
-            this.panelExcel.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.panelButtons)).BeginInit();
             this.panelButtons.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.progressBar.Properties)).BeginInit();
@@ -74,7 +73,7 @@
             // 
             this.trackBar.Dock = System.Windows.Forms.DockStyle.Right;
             this.trackBar.EditValue = null;
-            this.trackBar.Location = new System.Drawing.Point(585, 39);
+            this.trackBar.Location = new System.Drawing.Point(778, 39);
             this.trackBar.Name = "trackBar";
             this.trackBar.Properties.BorderStyle = DevExpress.XtraEditors.Controls.BorderStyles.NoBorder;
             this.trackBar.Properties.InvertLayout = true;
@@ -89,33 +88,16 @@
             // 
             // panelExcel
             // 
-            this.panelExcel.Controls.Add(this.labelState);
             this.panelExcel.Dock = System.Windows.Forms.DockStyle.Fill;
             this.panelExcel.Location = new System.Drawing.Point(322, 39);
             this.panelExcel.Name = "panelExcel";
-            this.panelExcel.Size = new System.Drawing.Size(263, 225);
+            this.panelExcel.Size = new System.Drawing.Size(456, 225);
             this.panelExcel.TabIndex = 5;
-            // 
-            // labelState
-            // 
-            this.labelState.Appearance.BackColor = System.Drawing.Color.White;
-            this.labelState.Appearance.ForeColor = System.Drawing.Color.Black;
-            this.labelState.Appearance.Options.UseBackColor = true;
-            this.labelState.Appearance.Options.UseForeColor = true;
-            this.labelState.Appearance.Options.UseTextOptions = true;
-            this.labelState.Appearance.TextOptions.HAlignment = DevExpress.Utils.HorzAlignment.Center;
-            this.labelState.Appearance.TextOptions.VAlignment = DevExpress.Utils.VertAlignment.Center;
-            this.labelState.AutoSizeMode = DevExpress.XtraEditors.LabelAutoSizeMode.None;
-            this.labelState.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.labelState.Location = new System.Drawing.Point(2, 2);
-            this.labelState.Name = "labelState";
-            this.labelState.Size = new System.Drawing.Size(259, 221);
-            this.labelState.TabIndex = 0;
-            this.labelState.Text = "Нет данных...";
             // 
             // panelButtons
             // 
             this.panelButtons.BorderStyle = DevExpress.XtraEditors.Controls.BorderStyles.NoBorder;
+            this.panelButtons.Controls.Add(this.checkHeader);
             this.panelButtons.Controls.Add(this.progressBar);
             this.panelButtons.Controls.Add(this.acceptButton);
             this.panelButtons.Controls.Add(this.clearButton);
@@ -125,19 +107,41 @@
             this.panelButtons.Location = new System.Drawing.Point(0, 0);
             this.panelButtons.Name = "panelButtons";
             this.panelButtons.Padding = new System.Windows.Forms.Padding(5);
-            this.panelButtons.Size = new System.Drawing.Size(625, 34);
+            this.panelButtons.Size = new System.Drawing.Size(818, 34);
             this.panelButtons.TabIndex = 1;
+            // 
+            // checkHeader
+            // 
+            this.checkHeader.AllowFocus = false;
+            this.checkHeader.Appearance.Image = ((System.Drawing.Image)(resources.GetObject("checkHeader.Appearance.Image")));
+            this.checkHeader.Appearance.Options.UseImage = true;
+            this.checkHeader.Appearance.Options.UseTextOptions = true;
+            this.checkHeader.Appearance.TextOptions.HAlignment = DevExpress.Utils.HorzAlignment.Near;
+            this.checkHeader.Appearance.TextOptions.Trimming = DevExpress.Utils.Trimming.Character;
+            this.checkHeader.AppearancePressed.Image = ((System.Drawing.Image)(resources.GetObject("checkHeader.AppearancePressed.Image")));
+            this.checkHeader.AppearancePressed.Options.UseImage = true;
+            this.checkHeader.ImageOptions.Image = ((System.Drawing.Image)(resources.GetObject("checkHeader.ImageOptions.Image")));
+            this.checkHeader.ImageOptions.ImageToTextIndent = 5;
+            this.checkHeader.ImageOptions.Location = DevExpress.XtraEditors.ImageLocation.MiddleLeft;
+            this.checkHeader.Location = new System.Drawing.Point(93, 6);
+            this.checkHeader.Name = "checkHeader";
+            this.checkHeader.Size = new System.Drawing.Size(109, 23);
+            this.checkHeader.TabIndex = 7;
+            this.checkHeader.TabStop = false;
+            this.checkHeader.Text = "Нет заголовков";
+            this.checkHeader.ToolTip = "Устанавливает, есть или нет в загружаемом файле заголовки таблицы";
+            this.checkHeader.Click += new System.EventHandler(this.checkHeader_Click);
             // 
             // progressBar
             // 
-            this.progressBar.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
+            this.progressBar.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+            | System.Windows.Forms.AnchorStyles.Left)
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.progressBar.Location = new System.Drawing.Point(398, 8);
+            this.progressBar.Location = new System.Drawing.Point(480, 8);
             this.progressBar.Name = "progressBar";
             this.progressBar.Properties.ShowTitle = true;
             this.progressBar.Properties.TextOrientation = DevExpress.Utils.Drawing.TextOrientation.Horizontal;
-            this.progressBar.Size = new System.Drawing.Size(219, 18);
+            this.progressBar.Size = new System.Drawing.Size(330, 18);
             this.progressBar.TabIndex = 6;
             this.progressBar.Visible = false;
             // 
@@ -149,7 +153,7 @@
             this.acceptButton.ImageOptions.ImageToTextAlignment = DevExpress.XtraEditors.ImageAlignToText.LeftCenter;
             this.acceptButton.ImageOptions.ImageToTextIndent = 5;
             this.acceptButton.ImageOptions.Location = DevExpress.XtraEditors.ImageLocation.MiddleLeft;
-            this.acceptButton.Location = new System.Drawing.Point(300, 6);
+            this.acceptButton.Location = new System.Drawing.Point(382, 6);
             this.acceptButton.Name = "acceptButton";
             this.acceptButton.Size = new System.Drawing.Size(92, 22);
             this.acceptButton.TabIndex = 0;
@@ -166,9 +170,9 @@
             this.clearButton.ImageOptions.ImageToTextAlignment = DevExpress.XtraEditors.ImageAlignToText.LeftCenter;
             this.clearButton.ImageOptions.ImageToTextIndent = 5;
             this.clearButton.ImageOptions.Location = DevExpress.XtraEditors.ImageLocation.MiddleLeft;
-            this.clearButton.Location = new System.Drawing.Point(202, 6);
+            this.clearButton.Location = new System.Drawing.Point(295, 6);
             this.clearButton.Name = "clearButton";
-            this.clearButton.Size = new System.Drawing.Size(92, 22);
+            this.clearButton.Size = new System.Drawing.Size(80, 22);
             this.clearButton.TabIndex = 0;
             this.clearButton.TabStop = false;
             this.clearButton.Text = "Очистить";
@@ -183,13 +187,13 @@
             this.stopButton.ImageOptions.ImageToTextAlignment = DevExpress.XtraEditors.ImageAlignToText.LeftCenter;
             this.stopButton.ImageOptions.ImageToTextIndent = 5;
             this.stopButton.ImageOptions.Location = DevExpress.XtraEditors.ImageLocation.MiddleLeft;
-            this.stopButton.Location = new System.Drawing.Point(104, 6);
+            this.stopButton.Location = new System.Drawing.Point(208, 6);
             this.stopButton.Name = "stopButton";
-            this.stopButton.Size = new System.Drawing.Size(92, 22);
+            this.stopButton.Size = new System.Drawing.Size(81, 22);
             this.stopButton.TabIndex = 0;
             this.stopButton.TabStop = false;
             this.stopButton.Text = "Прервать";
-            this.stopButton.ToolTip = "Прервать загрузку";
+            this.stopButton.ToolTip = "Прервать процесс";
             this.stopButton.Click += new System.EventHandler(this.stopButton_Click);
             // 
             // loadButton
@@ -202,7 +206,7 @@
             this.loadButton.ImageOptions.Location = DevExpress.XtraEditors.ImageLocation.MiddleLeft;
             this.loadButton.Location = new System.Drawing.Point(6, 6);
             this.loadButton.Name = "loadButton";
-            this.loadButton.Size = new System.Drawing.Size(92, 22);
+            this.loadButton.Size = new System.Drawing.Size(81, 22);
             this.loadButton.TabIndex = 0;
             this.loadButton.TabStop = false;
             this.loadButton.Text = "Загрузить";
@@ -221,7 +225,7 @@
             this.panelMenus.Dock = System.Windows.Forms.DockStyle.Top;
             this.panelMenus.Location = new System.Drawing.Point(5, 5);
             this.panelMenus.Name = "panelMenus";
-            this.panelMenus.Size = new System.Drawing.Size(625, 34);
+            this.panelMenus.Size = new System.Drawing.Size(818, 34);
             this.panelMenus.TabIndex = 6;
             // 
             // XlShablon
@@ -235,13 +239,12 @@
             this.Controls.Add(this.panelMenus);
             this.Name = "XlShablon";
             this.Padding = new System.Windows.Forms.Padding(5);
-            this.Size = new System.Drawing.Size(635, 269);
+            this.Size = new System.Drawing.Size(828, 269);
             this.Load += new System.EventHandler(this.XlShablon_Load);
             ((System.ComponentModel.ISupportInitialize)(this.panelProc)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.trackBar.Properties)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.trackBar)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.panelExcel)).EndInit();
-            this.panelExcel.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.panelButtons)).EndInit();
             this.panelButtons.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.progressBar.Properties)).EndInit();
@@ -258,7 +261,7 @@
         private System.Windows.Forms.Splitter splitter1;
         private DevExpress.XtraEditors.TrackBarControl trackBar;
         private DevExpress.XtraEditors.PanelControl panelExcel;
-        private DevExpress.XtraEditors.LabelControl labelState;
+        //private DevExpress.XtraEditors.LabelControl labelState;
         private DevExpress.XtraEditors.PanelControl panelButtons;
         private DevExpress.XtraEditors.SimpleButton loadButton;
         private DevExpress.XtraEditors.SimpleButton acceptButton;
@@ -267,5 +270,6 @@
         private System.Windows.Forms.OpenFileDialog openXlDialog;
         private DevExpress.XtraEditors.ProgressBarControl progressBar;
         private DevExpress.XtraEditors.PanelControl panelMenus;
+        private DevExpress.XtraEditors.CheckButton checkHeader;
     }
 }

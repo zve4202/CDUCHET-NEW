@@ -2,7 +2,6 @@
 using GH.XlShablon;
 using GH.XlShablon.Workers;
 using System.Data;
-using System.Threading;
 using Tester.forms;
 
 namespace Tester.Database
@@ -16,7 +15,7 @@ namespace Tester.Database
             "from check_stock_orea_by_barcorde(:scan_type, :barcode, :st_id, :client_id)";
 
 
-        public ExcelVsDbWorker(DataProcessor dataProcessor, CancellationToken cancellationToken, DataRow[] excelRows) : base(dataProcessor, cancellationToken, excelRows)
+        public ExcelVsDbWorker(DataProcessor dataProcessor, DataRow[] excelRows) : base(dataProcessor, excelRows)
         {
             DbName = "CHECK_STOCK_OREA";
             string dbName = string.Format("{0}-{1}", DbName, index);

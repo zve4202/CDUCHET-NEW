@@ -6,20 +6,20 @@ namespace GH.Utils
     {
         public static string ProcessedText(int processed, int total)
         {
-            return string.Format("Обработано: {0} из {1}", processed, total);
+            return string.Format("{0} из {1}", processed, total);
         }
 
-        public static string RemainingText(DateTime processStarted, int totalElements, int processedElements)
+        public static string RemainingText(DateTime processStarted, int total, int processed)
         {
             int secondsRemaining = 0;
             int totalSecond = (int)(DateTime.Now - processStarted).TotalSeconds;
 
             if (totalSecond > 0)
             {
-                int itemsPerSecond = processedElements / totalSecond;
+                int itemsPerSecond = processed / totalSecond;
 
                 if (itemsPerSecond > 0)
-                    secondsRemaining = (totalElements - processedElements) / itemsPerSecond;
+                    secondsRemaining = (total - processed) * itemsPerSecond;
             }
 
             return string.Format("Оставшееся время обработки: {0}", new TimeSpan(0, 0, secondsRemaining).ToString(@"hh\:mm\:ss"));

@@ -4,8 +4,6 @@ using System.Windows.Forms;
 
 namespace GH.XlShablon
 {
-
-
     internal class XlPlace : Control
     {
         FieldParam _owner;

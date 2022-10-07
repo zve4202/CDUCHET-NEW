@@ -74,7 +74,7 @@ namespace GH.XlShablon
 
         protected override Worker GetWorker(DataRow[] excelRows)
         {
-            return new ExcelVsDbWorker(this, Shablon.CancellationToken, excelRows);
+            return new ExcelVsDbWorker(this, excelRows);
         }
 
 

@@ -108,7 +108,7 @@ namespace GH.XlShablon
 
         protected virtual Worker GetWorker(DataRow[] excelRows)
         {
-            return new Worker(this, Shablon.CancellationToken, excelRows);
+            return new Worker(this, excelRows);
         }
 
         internal async void ProcessExcel()
@@ -126,7 +126,7 @@ namespace GH.XlShablon
                 await ProcessData();
                 Shablon.ClearExcelData();
 
-                if (Shablon.CancellationToken.IsCancellationRequested)
+                if (IsCancellationRequested)
                     break;
             }
 
@@ -190,6 +190,9 @@ namespace GH.XlShablon
         }
 
         protected virtual ProcessScanType ProcessScanType => ProcessScanType.Unique;
+
+        public bool IsCancellationRequested => Shablon != null ? Shablon.IsCancellationRequested : true;
+
         internal void CreateResultTable()
         {
             Shablon.SetStatus("Ждите: идёт подготовка данных...");
@@ -307,7 +310,7 @@ namespace GH.XlShablon
 
                     foreach (DataRow excelRow in excelList)
                     {
-                        if (Shablon.CancellationToken.IsCancellationRequested)
+                        if (IsCancellationRequested)
                             return;
                         workerList.Add(excelRow);
                         if (workerList.Count == WorkersPull.MaxWorkerLine)
@@ -344,15 +347,14 @@ namespace GH.XlShablon
                 {
                     if (AddCalculateFields())
                     {
-                        foreach (var row in ResultData.Select())
+                        foreach (var row in Shablon.GetDataList(ResultData))
                         {
                             CalculateRow(row);
                             Shablon.SetNextStep();
-
                         }
                     }
                 }
-            }, Shablon.CancellationToken);
+            });
         }
 
         private object addRowLocker = new object();
