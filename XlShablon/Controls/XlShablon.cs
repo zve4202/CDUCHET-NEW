@@ -34,7 +34,7 @@ namespace GH.XlShablon
         }
 
         [Browsable(false)]
-        public bool IsCancellationRequested
+        public bool CancellRequested
         {
             get
             {
@@ -191,17 +191,16 @@ namespace GH.XlShablon
             ParentForm.FormClosing += ParentForm_FormClosing;
             pocessor.CreateOutsourceMap(DataMap);
 
-            this.InvokeIfRequired(() =>
-            {
-                RefreshControlsState();
-            });
-
         }
 
         internal DataRow[] GetExcelList()
         {
             DataRow[] result = ExcelData.Select();
             progressHolder.Start(result.Length);
+            this.InvokeIfRequired(() =>
+            {
+                RefreshControlsState();
+            });
 
             WorkersPull.MaxWorkerLine = progressHolder.StepBy;
 
@@ -243,7 +242,7 @@ namespace GH.XlShablon
         public async void LoadFromExcel()
         {
             Clear();
-            SetStatus("Ждите: идет загрузка данных...");
+            SetInfo("Ждите: идет загрузка данных...");
             progressHolder.StartLoading();
             RefreshControlsState();
 
@@ -253,8 +252,8 @@ namespace GH.XlShablon
             {
                 Task loadInfo = new Task(() =>
                 {
-                    string info = progressHolder.Message;
-                    while (progressHolder.InProgress && !IsCancellationRequested)
+                    string info = progressHolder.Info;
+                    while (progressHolder.InProgress && !CancellRequested)
                     {
                         if (ExcelData.Rows.Count == 0)
                             Thread.Sleep(500);
@@ -264,25 +263,30 @@ namespace GH.XlShablon
                         if (ExcelData != null)
                         {
 
-                            if (IsCancellationRequested)
+                            if (CancellRequested)
                             {
-                                progressHolder.Summary = "Остановка...";
+
+                                SetSummary("Остановка...");
                             }
-                            else
-                                if (ExcelData.Rows.Count == 0)
+                            else if (ExcelData.Rows.Count == 0)
                             {
-                                if (progressHolder.Message == info)
-                                    SetStatus("");
+                                if (progressHolder.Info == info)
+                                    SetInfo("");
                                 else
-                                    SetStatus(info);
+                                    SetInfo(info);
                             }
                             else
-                                progressHolder.Summary = $"Загружено {ExcelData.Rows.Count} записей...";
-                        };
+                            {
+                                if (string.IsNullOrEmpty(progressHolder.Info))
+                                    SetInfo(info);
+
+                                progressHolder.Total = ExcelData.Rows.Count;
+                            }
+                        }
                     }
 
-                    if (!IsCancellationRequested)
-                        progressHolder.Summary = $"Загружено {ExcelData.Rows.Count} записей...";
+                    if (!CancellRequested)
+                        progressHolder.Total = ExcelData.Rows.Count;
 
                 });
 
@@ -291,23 +295,26 @@ namespace GH.XlShablon
                 await Task.Factory.StartNew(() =>
                 {
                     LoadData();
-                    SetStatus($"Загружено {ExcelData.Rows.Count} записей...");
-                    progressHolder.Stop();
+                    progressHolder.Total = ExcelData.Rows.Count;
                 });
 
             }
             finally
             {
-                if (IsCancellationRequested)
+                if (CancellRequested)
                 {
                     Clear();
                     ExcelData = null;
+                    progressHolder.Total = 0;
+                    SetSummary("Загрузка остановлена...");
                 }
                 else
                 {
                     Reset();
-                    SetStatus($"Загружено {ExcelData.Rows.Count} записей...");
+                    progressHolder.Total = ExcelData.Rows.Count;
+                    SetSummary("Загрузка завершена");
                 }
+                progressHolder.StopLoading();
                 RefreshControlsState();
             }
         }
@@ -350,12 +357,15 @@ namespace GH.XlShablon
 
         internal void WaitForEnd()
         {
+            progressHolder.RefreshInfo(true);
             while (progressHolder.InProgress)
             {
-                if (IsCancellationRequested)
+                if (CancellRequested)
                     return;
-                Thread.Sleep(200);
+                Thread.Sleep(1000);
+                progressHolder.RefreshInfo();
             }
+            progressHolder.RefreshInfo();
         }
 
         private void Clear()
@@ -365,7 +375,7 @@ namespace GH.XlShablon
             panelExcel.SuspendLayout();
             DataMap.Clear();
             excelMap.Clear();
-            SetStatus("Нет данных...");
+            SetSummary("Нет данных...");
             panelExcel.ResumeLayout();
             Refresh();
         }
@@ -428,7 +438,7 @@ namespace GH.XlShablon
             var columnIndices = new List<int>();
             while (reader.Read())
             {
-                if (IsCancellationRequested)
+                if (CancellRequested)
                     return;
 
                 if (first)
@@ -649,9 +659,13 @@ namespace GH.XlShablon
 
         const string processingText = "Ждите: идёт обработка данных...";
 
-        public void SetStatus(string text)
+        public void SetInfo(string text)
         {
-            progressHolder.Message = text;
+            progressHolder.Info = text;
+        }
+        public void SetSummary(string text)
+        {
+            progressHolder.Summary = text;
         }
 
         public bool PrepareTableForTest()
@@ -660,7 +674,7 @@ namespace GH.XlShablon
             if (!DataMap.MapIsReady(true))
                 return false;
 
-            SetStatus("Ждите: идёт подготовка данных...");
+            SetInfo("Ждите: идёт подготовка данных...");
 
             foreach (var item in DataMap)
             {
@@ -732,7 +746,7 @@ namespace GH.XlShablon
         internal void ClearExcelData()
         {
             ParentForm.FormClosing -= ParentForm_FormClosing;
-            if (!IsCancellationRequested)
+            if (!CancellRequested)
             {
                 ControlExecute(() =>
                 {
@@ -746,10 +760,10 @@ namespace GH.XlShablon
             progressBar.Visible = false;
             Clear();
             ExcelData = null;
-            if (IsCancellationRequested)
-                SetStatus("Отмена...");
+            if (CancellRequested)
+                SetSummary("Отмена...");
             else
-                SetStatus("Готово...");
+                SetSummary("Готово...");
             GC.Collect();
             GC.WaitForPendingFinalizers();
             Application.DoEvents();
@@ -760,8 +774,8 @@ namespace GH.XlShablon
 
         private void checkHeader_Click(object sender, EventArgs e)
         {
-            checkHeader.Checked = !checkHeader.Checked;
-            checkHeader.Text = checkHeader.Checked ? "Есть заголовки" : "Нет заголовков";
+            //checkHeader.Checked = !checkHeader.Checked;
+            checkHeader.Text = !checkHeader.Checked ? "Есть заголовки" : "Нет заголовков";
         }
     }
 }

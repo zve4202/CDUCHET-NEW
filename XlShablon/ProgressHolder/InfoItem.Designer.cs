@@ -37,7 +37,7 @@
             // 
             // panelInfo
             // 
-            this.panelInfo.Appearance.BackColor = System.Drawing.SystemColors.Control;
+            this.panelInfo.Appearance.BackColor = System.Drawing.Color.White;
             this.panelInfo.Appearance.Options.UseBackColor = true;
             this.panelInfo.BorderStyle = DevExpress.XtraEditors.Controls.BorderStyles.NoBorder;
             this.panelInfo.Controls.Add(this.message);
@@ -48,10 +48,11 @@
             this.panelInfo.Padding = new System.Windows.Forms.Padding(3);
             this.panelInfo.Size = new System.Drawing.Size(371, 24);
             this.panelInfo.TabIndex = 0;
+            this.panelInfo.Resize += new System.EventHandler(this.panelInfo_Resize);
             // 
             // message
             // 
-            this.message.Appearance.BackColor = System.Drawing.SystemColors.Info;
+            this.message.Appearance.BackColor = System.Drawing.Color.White;
             this.message.Appearance.BorderColor = System.Drawing.SystemColors.ActiveCaptionText;
             this.message.Appearance.Options.UseBackColor = true;
             this.message.Appearance.Options.UseBorderColor = true;
@@ -84,13 +85,15 @@
             this.caption.TabIndex = 0;
             this.caption.Text = "Caption:";
             // 
-            // InfoItemNew
+            // InfoItem
             // 
+            this.Appearance.BackColor = System.Drawing.Color.White;
+            this.Appearance.Options.UseBackColor = true;
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.AutoSize = true;
             this.Controls.Add(this.panelInfo);
-            this.Name = "InfoItemNew";
+            this.Name = "InfoItem";
             this.Size = new System.Drawing.Size(371, 105);
             ((System.ComponentModel.ISupportInitialize)(this.panelInfo)).EndInit();
             this.panelInfo.ResumeLayout(false);

@@ -12,7 +12,6 @@ namespace GH.XlShablon
     {
         private Dictionary<InfoNames, InfoItem> infos = new Dictionary<InfoNames, InfoItem>();
 
-        private Timer _timer;
         private InfoControl _infoControl;
         private ProgressBarControl _progressBar;
         public ProgressHolder(XlShablon shablon, ProgressBarControl progressBar)
@@ -22,17 +21,10 @@ namespace GH.XlShablon
             _progressBar.DataBindings.Add(new Binding(nameof(_progressBar.Position), _infoControl.DataSource, nameof(Current), true, DataSourceUpdateMode.OnPropertyChanged));
 
             shablon.Disposed += Shablon_Disposed;
-            _timer = new Timer();
-            _timer.Enabled = false;
-            _timer.Interval = 1000;
-            _timer.Tick += _timer_Tick;
         }
 
-        private void _timer_Tick(object sender, EventArgs e)
+        public void RefreshInfo(bool first = false)
         {
-            if (InProgress == false)
-                return;
-
             InvokeIfRequired(() =>
             {
                 foreach (KeyValuePair<InfoNames, InfoItem> item in infos)
@@ -40,24 +32,34 @@ namespace GH.XlShablon
                     switch (item.Key)
                     {
                         case InfoNames.Info:
-                            item.Value.Visible = ProgressMode != ProgressModes.None && !string.IsNullOrEmpty(Message);
-                            item.Value.Text = Message;
+                            item.Value.Visible = ProgressMode != ProgressModes.None && !string.IsNullOrEmpty(Info);
+                            item.Value.Text = Info;
+                            if (first)
+                                item.Value.BringToFront();
                             break;
                         case InfoNames.Progress:
-                            item.Value.Visible = ProgressMode != ProgressModes.None && Current > 0 && Total > 0 && Current != Total;
+                            item.Value.Visible = ProgressMode != ProgressModes.None && Current > 0 && Total > 0;
                             item.Value.Text = Progress;
+                            if (first)
+                                item.Value.BringToFront();
                             break;
                         case InfoNames.Duration:
                             item.Value.Visible = ProgressMode != ProgressModes.None && (Current > 0 || Total > 0);
                             item.Value.Text = Duration;
+                            if (first)
+                                item.Value.BringToFront();
                             break;
                         case InfoNames.Remaining:
                             item.Value.Visible = ProgressMode == ProgressModes.Test && Current > 0 && Total > 0 && Current != Total;
                             item.Value.Text = Remaining;
+                            if (first)
+                                item.Value.BringToFront();
                             break;
                         case InfoNames.Summary:
                             item.Value.Visible = ProgressMode != ProgressModes.None && !string.IsNullOrEmpty(Summary);
                             item.Value.Text = Summary;
+                            if (first)
+                                item.Value.BringToFront();
                             break;
                         default:
                             break;
@@ -80,14 +82,55 @@ namespace GH.XlShablon
         private object locker = new object();
 
         private int _total;
-        public int Total => _total;
+        public int Total
+        {
+            get => _total;
+            set
+            {
+
+                _total = value;
+                switch (ProgressMode)
+                {
+                    case ProgressModes.Load:
+                        InvokeIfRequired(() =>
+                        {
+                            infos[InfoNames.Progress].Visible = _total > 0;
+                            infos[InfoNames.Progress].Text = Progress;
+                        });
+                        break;
+                    default:
+                        break;
+                }
+            }
+        }
 
         private int _current;
         public int Current => _current;
 
         private DateTime _processStarted;
 
-        public string Message { get; set; }
+        public string Info
+        {
+            get => _info;
+            set
+            {
+                _info = value ?? "";
+                InvokeIfRequired(() =>
+                {
+                    infos[InfoNames.Info].Visible = !string.IsNullOrEmpty(_info);
+                    switch (ProgressMode)
+                    {
+                        case ProgressModes.Load:
+                            infos[InfoNames.Info].Text = _info;
+                            break;
+                        default:
+                            break;
+                    }
+
+                });
+
+            }
+        }
         public string Progress
         {
             get
@@ -95,19 +138,18 @@ namespace GH.XlShablon
                 switch (ProgressMode)
                 {
                     case ProgressModes.Load:
-                        return ProcessedText(Current, Total);
+                        return string.Format("Загружено {0:n0} записей...", _total);
                     case ProgressModes.Test:
                         return ProcessedText(Current, Total);
                     default:
-                        break;
+                        return "";
                 }
-                return "";
-
             }
         }
         public string Duration => DurationText(_processStarted);
         public string Remaining => RemainingText(_processStarted, Current, Total);
         private string _summary;
+        private string _info;
 
         public string Summary
         {
@@ -115,10 +157,19 @@ namespace GH.XlShablon
             set
             {
                 _summary = value ?? "";
-                //InvokeIfRequired(() =>
-                //{
-                //    infos[InfoNames.Summary].Visible = !string.IsNullOrEmpty(_summary);
-                //});
+                InvokeIfRequired(() =>
+                {
+                    infos[InfoNames.Summary].Visible = !string.IsNullOrEmpty(_summary);
+                    switch (ProgressMode)
+                    {
+                        case ProgressModes.Load:
+                            infos[InfoNames.Summary].Text = _summary;
+                            break;
+                        default:
+                            break;
+                    }
+
+                });
             }
         }
 
@@ -127,7 +178,7 @@ namespace GH.XlShablon
         {
             get
             {
-                return _progressMode != ProgressModes.None || (_current < _total && _progressMode != ProgressModes.None);
+                return _progressMode == ProgressModes.Load || (_current < _total && _progressMode == ProgressModes.Test);
             }
         }
 
@@ -140,12 +191,11 @@ namespace GH.XlShablon
 
         public void Start(int total)
         {
-            _timer.Start();
             _processStarted = DateTime.Now;
             _progressMode = ProgressModes.Test;
             _infoControl.ProgressMode = true;
             _current = 0;
-            _total = total;
+            Total = total;
             StepBy = Math.Min(Math.Max(1, (Total / 100)), 500);
             Summary = "";
             InvokeIfRequired(() =>
@@ -157,18 +207,6 @@ namespace GH.XlShablon
 
         }
 
-        public void StartLoading()
-        {
-            _timer.Start();
-            _processStarted = DateTime.Now;
-            _progressMode = ProgressModes.Load;
-
-            _infoControl.ProgressMode = true;
-            _current = 0;
-            _total = 0;
-            StepBy = 1;
-            Summary = "";
-        }
 
         internal void Restart(int total)
         {
@@ -189,6 +227,7 @@ namespace GH.XlShablon
             {
                 _current++;
             }
+
         }
 
         public InfoControl GetInfoControl()
@@ -200,18 +239,44 @@ namespace GH.XlShablon
         private void Shablon_Disposed(object sender, EventArgs e)
         {
             _progressMode = ProgressModes.None;
-            _timer.Stop();
-            _timer.Dispose();
-            _timer = null;
             _infoControl = null;
+        }
+
+        internal void StartLoading()
+        {
+            _progressMode = ProgressModes.Load;
+
+            _infoControl.ProgressMode = true;
+            _current = 0;
+            Total = 0;
+            StepBy = 1;
+            Summary = "";
+            Info = "Ждите: идёт загрузка данных...";
+        }
+
+        internal void StopLoading()
+        {
+            InvokeIfRequired(() =>
+            {
+                foreach (KeyValuePair<InfoNames, InfoItem> item in infos)
+                {
+                    switch (item.Key)
+                    {
+                        case InfoNames.Summary:
+                            item.Value.Visible = Total > 0;
+                            item.Value.Text = Progress;
+                            break;
+                        default:
+                            item.Value.Visible = false;
+                            break;
+                    }
+                }
+            });
+            _progressMode = ProgressModes.None;
         }
 
         public void Stop()
         {
-            _progressMode = ProgressModes.None;
-            _timer.Stop();
-
-
             if (_total == _current)
             {
                 Summary = "Работа заверщена успешно";
@@ -220,14 +285,13 @@ namespace GH.XlShablon
             {
                 Summary = "Работа остановленя";
             }
-
+            _progressMode = ProgressModes.None;
         }
 
         internal void BringToFront()
         {
             _infoControl.BringToFront();
         }
-
 
     }
 }

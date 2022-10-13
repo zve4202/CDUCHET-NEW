@@ -191,11 +191,11 @@ namespace GH.XlShablon
 
         protected virtual ProcessScanType ProcessScanType => ProcessScanType.Unique;
 
-        public bool IsCancellationRequested => Shablon != null ? Shablon.IsCancellationRequested : true;
+        public bool IsCancellationRequested => Shablon != null ? Shablon.CancellRequested : true;
 
         internal void CreateResultTable()
         {
-            Shablon.SetStatus("Ждите: идёт подготовка данных...");
+            Shablon.SetInfo("Ждите: идёт подготовка данных...");
             if (ResultData == null)
             {
                 ResultData = new DataTable();
@@ -296,7 +296,7 @@ namespace GH.XlShablon
             if (ShablonIndex == 0)
                 keys.Clear();
 
-            Shablon.SetStatus("Ждите: идёт обработка данных...");
+            Shablon.SetInfo("Ждите: идёт обработка данных...");
 
             baseFields = Shablon.DataMap.Where(m => m.ParamFunc != ParamFunctionType.OutSourceData).ToList();
             outsourceFields = Shablon.DataMap.Where(m => m.ParamFunc == ParamFunctionType.OutSourceData).ToList();

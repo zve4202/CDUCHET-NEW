@@ -28,8 +28,9 @@ namespace GH.XlShablon
                 InfoItem infoItem = new InfoItem(info);
                 panelInfo.Controls.Add(infoItem);
                 infoItem.Visible = false;
+                infoItem.Text = "";
                 infoItem.Dock = DockStyle.Top;
-                infoItem.SendToBack();
+                infoItem.BringToFront();
                 holder.AddDictInfo(info, infoItem);
             }
 

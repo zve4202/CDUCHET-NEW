@@ -2,15 +2,15 @@
 {
     public enum InfoNames
     {
-        [Iinfo("Информация", nameof(ProgressHolder.Message))]
+        [Iinfo("Информация", nameof(ProgressHolder.Info))]
         Info,
-        [Iinfo("Прогресс", nameof(ProgressHolder.Progress))]
+        [Iinfo("Текущий прогресс", nameof(ProgressHolder.Progress))]
         Progress,
-        [Iinfo("Длительность", nameof(ProgressHolder.Duration))]
+        [Iinfo("Прошло с начала", nameof(ProgressHolder.Duration))]
         Duration,
-        [Iinfo("Осталось", nameof(ProgressHolder.Remaining))]
+        [Iinfo("Осталось до конца", nameof(ProgressHolder.Remaining))]
         Remaining,
-        [Iinfo("Отчёт", nameof(ProgressHolder.Summary))]
+        [Iinfo("Итого", nameof(ProgressHolder.Summary))]
         Summary
     }
 }

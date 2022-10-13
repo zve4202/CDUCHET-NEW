@@ -55,6 +55,8 @@
             // 
             // panelInfo
             // 
+            this.panelInfo.Appearance.BackColor = System.Drawing.Color.White;
+            this.panelInfo.Appearance.Options.UseBackColor = true;
             this.panelInfo.BorderStyle = DevExpress.XtraEditors.Controls.BorderStyles.NoBorder;
             this.panelInfo.Dock = System.Windows.Forms.DockStyle.Top;
             this.panelInfo.Location = new System.Drawing.Point(3, 3);
@@ -63,13 +65,15 @@
             this.panelInfo.TabIndex = 1;
             this.panelInfo.Visible = false;
             // 
-            // InfoControlNew
+            // InfoControl
             // 
+            this.Appearance.BackColor = System.Drawing.Color.White;
+            this.Appearance.Options.UseBackColor = true;
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.Controls.Add(this.labelInfo);
             this.Controls.Add(this.panelInfo);
-            this.Name = "InfoControlNew";
+            this.Name = "InfoControl";
             this.Padding = new System.Windows.Forms.Padding(3);
             this.Size = new System.Drawing.Size(536, 150);
             ((System.ComponentModel.ISupportInitialize)(this._dataSource)).EndInit();

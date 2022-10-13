@@ -36,6 +36,9 @@ namespace Tester.forms
 
         public void SelectResult()
         {
+            if (Disposing || IsDisposed)
+                return;
+
             _canPage = true;
             excelResult.SetResult(dataProcessor);
             pages.SelectedTabPage = resultPage;

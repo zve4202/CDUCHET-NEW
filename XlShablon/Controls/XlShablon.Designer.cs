@@ -34,7 +34,7 @@
             this.trackBar = new DevExpress.XtraEditors.TrackBarControl();
             this.panelExcel = new DevExpress.XtraEditors.PanelControl();
             this.panelButtons = new DevExpress.XtraEditors.PanelControl();
-            this.checkHeader = new DevExpress.XtraEditors.CheckButton();
+            this.checkHeader = new DevExpress.XtraEditors.CheckEdit();
             this.progressBar = new DevExpress.XtraEditors.ProgressBarControl();
             this.acceptButton = new DevExpress.XtraEditors.SimpleButton();
             this.clearButton = new DevExpress.XtraEditors.SimpleButton();
@@ -48,6 +48,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.panelExcel)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.panelButtons)).BeginInit();
             this.panelButtons.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.checkHeader.Properties)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.progressBar.Properties)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.panelMenus)).BeginInit();
             this.panelMenus.SuspendLayout();
@@ -112,23 +113,15 @@
             // 
             // checkHeader
             // 
-            this.checkHeader.AllowFocus = false;
-            this.checkHeader.Appearance.Image = ((System.Drawing.Image)(resources.GetObject("checkHeader.Appearance.Image")));
-            this.checkHeader.Appearance.Options.UseImage = true;
-            this.checkHeader.Appearance.Options.UseTextOptions = true;
-            this.checkHeader.Appearance.TextOptions.HAlignment = DevExpress.Utils.HorzAlignment.Near;
-            this.checkHeader.Appearance.TextOptions.Trimming = DevExpress.Utils.Trimming.Character;
-            this.checkHeader.AppearancePressed.Image = ((System.Drawing.Image)(resources.GetObject("checkHeader.AppearancePressed.Image")));
-            this.checkHeader.AppearancePressed.Options.UseImage = true;
-            this.checkHeader.ImageOptions.Image = ((System.Drawing.Image)(resources.GetObject("checkHeader.ImageOptions.Image")));
-            this.checkHeader.ImageOptions.ImageToTextIndent = 5;
-            this.checkHeader.ImageOptions.Location = DevExpress.XtraEditors.ImageLocation.MiddleLeft;
+            this.checkHeader.EditValue = true;
             this.checkHeader.Location = new System.Drawing.Point(93, 6);
             this.checkHeader.Name = "checkHeader";
-            this.checkHeader.Size = new System.Drawing.Size(109, 23);
+            this.checkHeader.Properties.AllowFocused = false;
+            this.checkHeader.Properties.AutoHeight = false;
+            this.checkHeader.Properties.Caption = "Есть заголовки";
+            this.checkHeader.Size = new System.Drawing.Size(109, 22);
             this.checkHeader.TabIndex = 7;
             this.checkHeader.TabStop = false;
-            this.checkHeader.Text = "Нет заголовков";
             this.checkHeader.ToolTip = "Устанавливает, есть или нет в загружаемом файле заголовки таблицы";
             this.checkHeader.Click += new System.EventHandler(this.checkHeader_Click);
             // 
@@ -247,6 +240,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.panelExcel)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.panelButtons)).EndInit();
             this.panelButtons.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.checkHeader.Properties)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.progressBar.Properties)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.panelMenus)).EndInit();
             this.panelMenus.ResumeLayout(false);
@@ -270,6 +264,6 @@
         private System.Windows.Forms.OpenFileDialog openXlDialog;
         private DevExpress.XtraEditors.ProgressBarControl progressBar;
         private DevExpress.XtraEditors.PanelControl panelMenus;
-        private DevExpress.XtraEditors.CheckButton checkHeader;
+        private DevExpress.XtraEditors.CheckEdit checkHeader;
     }
 }

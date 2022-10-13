@@ -38,6 +38,9 @@ namespace Tester.forms
 
         public void SetResult(DataProcessor dataProcessor)
         {
+            if (Disposing || IsDisposed)
+                return;
+
             ParentForm.FormClosing -= ParentForm_FormClosing;
             ParentForm.FormClosing += ParentForm_FormClosing;
 
