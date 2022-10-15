@@ -531,19 +531,22 @@ namespace GH.Database
             return Select();
         }
 
-        public object SelectFormProcedure(object entity, string sql)
+        public object SelectFormProcedure(object entity, string sql, bool withCommite = true)
         {
             object res = null;
+            ITransaction transaction = null;
             try
             {
                 using (ISession session = OpenSession())
                 {
-                    ITransaction transaction = session.BeginTransaction();
+                    if (withCommite)
+                        transaction = session.BeginTransaction();
                     IQuery query = session.CreateSQLQuery(sql).AddEntity(typeof(T));
                     SetParams(entity, query);
 
                     res = query.UniqueResult<T>();
-                    transaction.Commit();
+                    if (withCommite)
+                        transaction.Commit();
                 }
             }
             catch (Exception ex)

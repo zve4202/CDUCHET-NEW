@@ -10,7 +10,7 @@ namespace Tester.Database
     {
         IFactoryCriator factory;
         INHRepository repository;
-        private object locker = new object();
+        //private object locker = new object();
         const string sql = "select id, scan_type, prix_qty, stock_qty, orea_qty " +
             "from check_stock_orea_by_barcorde(:scan_type, :barcode, :st_id, :client_id)";
 
@@ -29,10 +29,10 @@ namespace Tester.Database
         {
             TestParams testParams = ExcelDbProcSetting.Setting.GetTestParams(dataProcessor.GetKeyValue(excelRow).ToString());
             object result = null;
-            lock (locker)
-            {
-                result = repository.SelectFormProcedure(testParams, sql);
-            }
+            //lock (locker)
+            //{
+            result = repository.SelectFormProcedure(testParams, sql, false);
+            //}
             dataProcessor.ProcessRow(excelRow, result);
         }
 

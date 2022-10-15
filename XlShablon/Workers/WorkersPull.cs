@@ -7,7 +7,7 @@ namespace GH.XlShablon.Workers
 {
     public static class WorkersPull
     {
-        private const int workersCount = 4;
+        private const int workersCount = 12;
         private static int currentWorker = 1;
         public static int MaxWorkerLine = 100;
         public static int CurrentWorker

@@ -195,7 +195,7 @@ namespace GH.XlShablon
 
         internal void CreateResultTable()
         {
-            Shablon.SetInfo("Ждите: идёт подготовка данных...");
+            Shablon.SetInfo("Подготовка данных...");
             if (ResultData == null)
             {
                 ResultData = new DataTable();
@@ -296,7 +296,7 @@ namespace GH.XlShablon
             if (ShablonIndex == 0)
                 keys.Clear();
 
-            Shablon.SetInfo("Ждите: идёт обработка данных...");
+            Shablon.SetInfo("Обработка данных...");
 
             baseFields = Shablon.DataMap.Where(m => m.ParamFunc != ParamFunctionType.OutSourceData).ToList();
             outsourceFields = Shablon.DataMap.Where(m => m.ParamFunc == ParamFunctionType.OutSourceData).ToList();

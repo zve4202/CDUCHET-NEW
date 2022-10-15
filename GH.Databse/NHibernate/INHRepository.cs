@@ -22,7 +22,7 @@ namespace GH.Database
         void CloseOpenDoc(object entity);
         IList SelectAll();
         BaseEntity SelectOne();
-        object SelectFormProcedure(object entity, string sql);
+        object SelectFormProcedure(object entity, string sql, bool withCommite = true);
         void ExequteQuery(string[] sql);
     }
 }

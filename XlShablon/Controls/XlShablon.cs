@@ -242,7 +242,7 @@ namespace GH.XlShablon
         public async void LoadFromExcel()
         {
             Clear();
-            SetInfo("Ждите: идет загрузка данных...");
+            SetInfo("Загрузка данных...");
             progressHolder.StartLoading();
             RefreshControlsState();
 
@@ -657,7 +657,7 @@ namespace GH.XlShablon
             DataProcessor.ProcessExcel();
         }
 
-        const string processingText = "Ждите: идёт обработка данных...";
+        const string processingText = "Обработка данных...";
 
         public void SetInfo(string text)
         {
@@ -674,7 +674,7 @@ namespace GH.XlShablon
             if (!DataMap.MapIsReady(true))
                 return false;
 
-            SetInfo("Ждите: идёт подготовка данных...");
+            SetInfo("Подготовка данных...");
 
             foreach (var item in DataMap)
             {

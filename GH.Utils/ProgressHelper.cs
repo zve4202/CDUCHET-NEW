@@ -11,26 +11,23 @@ namespace GH.Utils
 
         public static string RemainingText(DateTime processStarted, int processed, int total)
         {
-            int secondsRemaining = 0;
-            int totalSecond = (int)(DateTime.Now - processStarted).TotalSeconds;
+            int milliSecondsForRemaining = 0;
+            int totalMilliseconds = (int)(DateTime.Now - processStarted).TotalMilliseconds;
 
-            if (totalSecond > 0)
+            if (processed > 0)
             {
-                int itemsPerSecond = processed / totalSecond;
+                int milliSecondsForItem = totalMilliseconds / processed;
 
-                if (itemsPerSecond > 0)
-                    secondsRemaining = (total - processed) * itemsPerSecond;
+                if (milliSecondsForItem > 0)
+                    milliSecondsForRemaining = (total - processed) * milliSecondsForItem;
             }
 
-            return TimeSpan.FromMilliseconds(secondsRemaining).ToString(@"hh\:mm\:ss");
-
-            //return new TimeSpan(0, 0, secondsRemaining).ToString(@"hh\:mm\:ss");
+            return TimeSpan.FromMilliseconds(milliSecondsForRemaining).ToString(@"hh\:mm\:ss");
         }
 
         public static string DurationText(DateTime processStarted)
         {
             return TimeSpan.FromTicks(DateTime.Now.Subtract(processStarted).Ticks).ToString(@"hh\:mm\:ss");
         }
-
     }
 }

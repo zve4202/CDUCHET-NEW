@@ -251,7 +251,7 @@ namespace GH.XlShablon
             Total = 0;
             StepBy = 1;
             Summary = "";
-            Info = "Ждите: идёт загрузка данных...";
+            Info = "Загрузка данных...";
         }
 
         internal void StopLoading()
